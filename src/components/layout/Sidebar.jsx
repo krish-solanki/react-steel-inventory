@@ -25,32 +25,29 @@ const Sidebar = () => {
               : "nav-link text-light"
           }
         >
-          Dashboard
-        </NavLink>
-<NavLink
-  to="/products"
-  className={({ isActive }) =>
-    isActive
-      ? "nav-link rounded mb-2 px-3 py-2 bg-primary text-white"
-      : "nav-link text-light rounded mb-2 px-3 py-2"
-  }
->
-  <i className="fa-solid fa-box-open me-2"></i>
-  Products
-</NavLink>
-
-        <NavLink
-          to="/warehouses"
-          className="nav-link text-light"
-        >
-          Warehouses
+          <i className="fa fa-home me-2"></i>Dashboard
         </NavLink>
 
-        <NavLink
-          to="/quotations"
-          className="nav-link text-light"
-        >
-          Quotations
+                
+        <NavLink to="/products" className={({ isActive }) =>
+            isActive
+              ? "nav-link rounded mb-2 px-3 py-2 bg-primary text-white"
+              : "nav-link text-light rounded mb-2 px-3 py-2"
+          }>
+          <i className="fa-solid fa-box-open me-2"></i>
+          Products
+        </NavLink>
+
+        <NavLink to="/warehouses" className="nav-link text-light">
+          <i className="fa fa-warehouse me-2"></i>Warehouses
+        </NavLink>
+
+        <NavLink to="/quotations" className="nav-link text-light">
+          <i className="fa fa-file-invoice me-2"></i>Quotations
+        </NavLink>
+
+        <NavLink to="/" className="nav-link text-light">
+          <i className="fa fa-right-from-bracket me-2"></i>Logout
         </NavLink>
 
       </nav>
