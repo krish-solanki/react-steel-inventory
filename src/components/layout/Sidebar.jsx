@@ -38,12 +38,24 @@ const Sidebar = () => {
           Products
         </NavLink>
 
-        <NavLink to="/warehouses" className="nav-link text-light">
+        <NavLink to="/warehouse" className="nav-link text-light">
           <i className="fa fa-warehouse me-2"></i>Warehouses
         </NavLink>
 
         <NavLink to="/quotations" className="nav-link text-light">
           <i className="fa fa-file-invoice me-2"></i>Quotations
+        </NavLink>
+
+        <NavLink to="/" className="nav-link text-light">
+          <i className="fa fa-right-from-bracket me-2"></i>Adjust Stock
+        </NavLink>
+
+        <NavLink to="/" className="nav-link text-light">
+          <i className="fa fa-right-from-bracket me-2"></i>Warehouse Stock
+        </NavLink>
+
+        <NavLink to="/" className="nav-link text-light">
+          <i className="fa fa-right-from-bracket me-2"></i>Sales
         </NavLink>
 
         <NavLink to="/" className="nav-link text-light">
