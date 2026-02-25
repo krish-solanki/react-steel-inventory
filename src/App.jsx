@@ -11,15 +11,19 @@ import Warehouses from "./pages/warehouses/Warehouses";
 import AddWarehouse from "./pages/warehouses/AddWarehouse";
 import EditWarehouseProduct from "./pages/warehouses/EditWarehouseProduct";
 import WarehouseProducts from "./pages/warehouses/WarehouseProducts";
+import LowStock from "./pages/warehouses/WarehouseLowStock";
 
 // Quotations
-
 import Quotations from "./pages/quotations/Quotations";
 import NewQuotation from "./pages/quotations/NewQuotation";
 import QuotationDetails from "./pages/quotations/QuotationDetails";
 
 // Stock Adjustment
 import StockAdjustment from "./pages/stock/StockAdjustment";
+
+// Sales
+import Sales from "./pages/sales/Sales";
+
 function App() {
   return (
     <Routes>
@@ -36,6 +40,7 @@ function App() {
         <Route path="warehouse/add" element={<AddWarehouse/>}/>
         <Route path="warehouses/:warehouseId/product/:productId" element={<EditWarehouseProduct/>}/>        
         <Route path="warehouse/product/:id" element={<WarehouseProducts/>}/>
+        <Route path="low-stock" element={<LowStock />} />
 
         {/* Quontations Routes */}
         <Route path="quotation" element={<Quotations/>}/>    
@@ -44,6 +49,9 @@ function App() {
 
        {/* Stock Adjustment  */}
         <Route path="stock-adjustment" element={<StockAdjustment />} />        
+
+        {/* Sales */}
+        <Route path="sales" element={<Sales />} />
       </Route>
     </Routes>
   );

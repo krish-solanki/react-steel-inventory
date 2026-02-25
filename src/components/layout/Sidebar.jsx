@@ -58,12 +58,12 @@ const Sidebar = () => {
           <i className="fa fa-right-from-bracket me-2"></i>Adjust Stock
         </NavLink>
 
-        <NavLink to="/" className="nav-link text-light">
+        <NavLink to="low-stock" className="nav-link text-light">
           <i className="fa fa-right-from-bracket me-2"></i>Warehouse Stock
         </NavLink>
 
-        <NavLink to="/" className="nav-link text-light">
-          <i className="fa fa-right-from-bracket me-2"></i>Sales
+        <NavLink to="/sales" className="nav-link text-light">
+          <i className="fa fa-chart-line me-2"></i> Sales
         </NavLink>
 
         <NavLink to="/" className="nav-link text-light">
