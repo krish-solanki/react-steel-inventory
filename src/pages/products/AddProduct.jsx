@@ -8,9 +8,10 @@ const AddProduct = () => {
     sku: "",
     name: "",
     category: "",
-    price: "",
+    sell_price: "",
+    cost_price: "",
     stock: "",
-    warehouse: "",
+    material: "",
     description: ""
   });
 
@@ -31,23 +32,6 @@ const AddProduct = () => {
       <form onSubmit={handleSubmit}>
         <div className="row">
 
-          {/* SKU */}
-          <div className="col-md-6 mb-3">
-            <label className="form-label">
-              SKU <span className="text-danger">*</span>
-            </label>
-            <input
-              type="text"
-              name="sku"
-              className="form-control"
-              placeholder="Enter SKU"
-              value={form.sku}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          {/* Product Name */}
           <div className="col-md-6 mb-3">
             <label className="form-label">
               Product Name <span className="text-danger">*</span>
@@ -63,7 +47,21 @@ const AddProduct = () => {
             />
           </div>
 
-          {/* Category */}
+          <div className="col-md-6 mb-3">
+            <label className="form-label">
+              SKU <span className="text-danger">*</span>
+            </label>
+            <input
+              type="text"
+              name="sku"
+              className="form-control"
+              placeholder="Enter SKU"
+              value={form.sku}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
           <div className="col-md-6 mb-3">
             <label className="form-label">
               Category <span className="text-danger">*</span>
@@ -83,23 +81,50 @@ const AddProduct = () => {
             </select>
           </div>
 
-          {/* Price */}
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Material</label>
+            <select
+              name="material"
+              className="form-select"
+              value={form.material}
+              onChange={handleChange}
+            >
+              <option value="">Select material</option>
+              <option>Steel</option>
+              <option>Wood</option>
+            </select>
+          </div>
+
           <div className="col-md-6 mb-3">
             <label className="form-label">
-              Price (₹) <span className="text-danger">*</span>
+              Cost Price (₹) <span className="text-danger">*</span>
             </label>
             <input
               type="number"
-              name="price"
+              name="cost_price"
               className="form-control"
-              placeholder="Enter price"
-              value={form.price}
+              placeholder="Enter cost price"
+              value={form.cost_price}
               onChange={handleChange}
               required
             />
           </div>
 
-          {/* Initial Stock */}
+          <div className="col-md-6 mb-3">
+            <label className="form-label">
+              Sell Price (₹) <span className="text-danger">*</span>
+            </label>
+            <input
+              type="number"
+              name="sell_price"
+              className="form-control"
+              placeholder="Enter sell price"
+              value={form.sell_price}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
           <div className="col-md-6 mb-3">
             <label className="form-label">
               Initial Stock <span className="text-danger">*</span>
@@ -115,38 +140,8 @@ const AddProduct = () => {
             />
           </div>
 
-          {/* Warehouse */}
-          <div className="col-md-6 mb-3">
-            <label className="form-label">Warehouse</label>
-            <select
-              name="warehouse"
-              className="form-select"
-              value={form.warehouse}
-              onChange={handleChange}
-            >
-              <option value="">Select warehouse</option>
-              <option>Main Warehouse</option>
-              <option>East Storage</option>
-              <option>Shop Floor</option>
-            </select>
-          </div>
-
-          {/* Description */}
-          <div className="col-6 mb-3">
-            <label className="form-label">Product Description</label>
-            <textarea
-              name="Minimum Stock"
-              className="form-control"
-              rows="1"
-              placeholder="Enter Minimum Stock Quantity in Inventory"
-              value={form.description}
-              onChange={handleChange}
-            />
-          </div>
-
         </div>
 
-        {/* Footer Buttons */}
         <div className="d-flex justify-content-between mt-3">
           <small className="text-muted">
             * indicates required fields

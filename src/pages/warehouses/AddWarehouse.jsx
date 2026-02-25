@@ -7,7 +7,9 @@ const AddWarehouse = () => {
   const [form, setForm] = useState({
     name: "",
     location: "",
-    description: ""
+    description: "",
+    contact_no: "",
+    manager_name: "",
   });
 
   const [error, setError] = useState("");
@@ -19,33 +21,31 @@ const AddWarehouse = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Simple validation
-    if (!form.name || !form.location) {
-      setError("Warehouse Name and Location are required!");
+    if (
+      !form.name ||
+      !form.location ||
+      !form.contact_no ||
+      !form.manager_name
+    ) {
+      setError("All required fields must be filled!");
       return;
     }
 
     console.log("Warehouse Data:", form);
 
-    // After save redirect to warehouses page
     navigate("/warehouses");
   };
 
   return (
     <div className="card shadow-sm">
       <div className="card-body">
-
         <h5 className="mb-4">Add New Warehouse</h5>
 
-        {error && (
-          <div className="alert alert-danger">{error}</div>
-        )}
+        {error && <div className="alert alert-danger">{error}</div>}
 
         <form onSubmit={handleSubmit}>
-
           <div className="row">
 
-            {/* Warehouse Name */}
             <div className="col-md-6 mb-3">
               <label className="form-label">
                 Warehouse Name <span className="text-danger">*</span>
@@ -60,7 +60,6 @@ const AddWarehouse = () => {
               />
             </div>
 
-            {/* Location */}
             <div className="col-md-6 mb-3">
               <label className="form-label">
                 Location <span className="text-danger">*</span>
@@ -75,7 +74,34 @@ const AddWarehouse = () => {
               />
             </div>
 
-            {/* Description */}
+            <div className="col-md-6 mb-3">
+              <label className="form-label">
+                Contact Number <span className="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                name="contact_no"
+                className="form-control"
+                placeholder="Enter contact number"
+                value={form.contact_no}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="col-md-6 mb-3">
+              <label className="form-label">
+                Manager Name <span className="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                name="manager_name"
+                className="form-control"
+                placeholder="Enter manager name"
+                value={form.manager_name}
+                onChange={handleChange}
+              />
+            </div>
+
             <div className="col-12 mb-3">
               <label className="form-label">Description</label>
               <textarea
@@ -90,7 +116,6 @@ const AddWarehouse = () => {
 
           </div>
 
-          {/* Buttons */}
           <div className="d-flex justify-content-between mt-3">
             <small className="text-muted">
               * indicates required fields
@@ -113,7 +138,6 @@ const AddWarehouse = () => {
           </div>
 
         </form>
-
       </div>
     </div>
   );

@@ -18,12 +18,29 @@ const WarehouseProducts = () => {
     navigate(`/warehouses/${id}/product/${productId}`);
   };
 
+  const handleAddProduct = () => {
+    navigate(`/warehouses/${id}/add-product`);
+  };
+
   return (
     <div className="container-fluid">
-      <h4 className="fw-bold mb-4">Warehouse Products</h4>
+
+      {/* Header Section */}
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h4 className="fw-bold mb-0">Warehouse Products</h4>
+
+        <button
+          className="btn btn-primary"
+          onClick={handleAddProduct}
+        >
+          <i className="fa fa-plus me-2"></i>
+          Add Product
+        </button>
+      </div>
 
       <div className="card shadow-sm">
         <div className="card-body">
+
           <table className="table">
             <thead className="table-light">
               <tr>
@@ -61,11 +78,12 @@ const WarehouseProducts = () => {
           </table>
 
           <button
-            className="btn btn-secondary"
-            onClick={() => navigate("/warehouse")}
+            className="btn btn-secondary mt-3"
+            onClick={() => navigate("/warehouses")}
           >
             Back to Warehouses
           </button>
+
         </div>
       </div>
     </div>
