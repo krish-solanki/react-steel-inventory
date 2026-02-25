@@ -23,6 +23,9 @@ import StockAdjustment from "./pages/stock/StockAdjustment";
 
 // Sales
 import Sales from "./pages/sales/Sales";
+import NewSales from "./pages/sales/NewSales";
+import SalesDetails from "./pages/sales/SalesDetails";
+
 
 function App() {
   return (
@@ -52,6 +55,9 @@ function App() {
 
         {/* Sales */}
         <Route path="sales" element={<Sales />} />
+        <Route path="sales/add" element={<NewSales />} />
+        <Route path="sales/:id" element={<SalesDetails />} />
+
       </Route>
     </Routes>
   );

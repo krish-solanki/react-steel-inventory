@@ -54,15 +54,27 @@ const Sidebar = () => {
           <i className="fa fa-file-invoice me-2"></i>Quotations
         </NavLink>
 
-        <NavLink to="stock-adjustment" className="nav-link text-light">
+        <NavLink to="stock-adjustment"className = {({ isActive }) =>
+            isActive
+              ? "nav-link rounded mb-2 px-3 py-2 bg-primary text-white"
+              : "nav-link text-light rounded mb-2 px-3 py-2"
+          }>
           <i className="fa fa-right-from-bracket me-2"></i>Adjust Stock
         </NavLink>
 
-        <NavLink to="low-stock" className="nav-link text-light">
+        <NavLink to="low-stock" className = {({ isActive }) =>
+            isActive
+              ? "nav-link rounded mb-2 px-3 py-2 bg-primary text-white"
+              : "nav-link text-light rounded mb-2 px-3 py-2"
+          }>
           <i className="fa fa-right-from-bracket me-2"></i>Warehouse Stock
         </NavLink>
 
-        <NavLink to="/sales" className="nav-link text-light">
+        <NavLink to="/sales" className = {({ isActive }) =>
+            isActive
+              ? "nav-link rounded mb-2 px-3 py-2 bg-primary text-white"
+              : "nav-link text-light rounded mb-2 px-3 py-2"
+          }>
           <i className="fa fa-chart-line me-2"></i> Sales
         </NavLink>
 
