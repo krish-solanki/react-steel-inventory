@@ -132,13 +132,13 @@ const AddProduct = () => {
           </div>
 
           {/* Description */}
-          <div className="col-12 mb-3">
+          <div className="col-6 mb-3">
             <label className="form-label">Product Description</label>
             <textarea
-              name="description"
+              name="Minimum Stock"
               className="form-control"
-              rows="3"
-              placeholder="Enter product description"
+              rows="1"
+              placeholder="Enter Minimum Stock Quantity in Inventory"
               value={form.description}
               onChange={handleChange}
             />

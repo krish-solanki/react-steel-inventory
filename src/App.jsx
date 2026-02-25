@@ -12,6 +12,11 @@ import AddWarehouse from "./pages/warehouses/AddWarehouse";
 import EditWarehouseProduct from "./pages/warehouses/EditWarehouseProduct";
 import WarehouseProducts from "./pages/warehouses/WarehouseProducts";
 
+// Quotations
+
+import Quotations from "./pages/quotations/Quotations";
+import NewQuotation from "./pages/quotations/NewQuotation";
+import QuotationDetails from "./pages/quotations/QuotationDetails";
 function App() {
   return (
     <Routes>
@@ -27,7 +32,13 @@ function App() {
         <Route path="warehouse" element={<Warehouses/>}/>
         <Route path="warehouse/add" element={<AddWarehouse/>}/>
         <Route path="warehouses/:warehouseId/product/:productId" element={<EditWarehouseProduct/>}/>        
-        <Route path="warehouse/product/:id" element={<WarehouseProducts/>}/>        
+        <Route path="warehouse/product/:id" element={<WarehouseProducts/>}/>
+
+        {/* Quontations Routes */}
+        <Route path="quotation" element={<Quotations/>}/>    
+        <Route path="quotation/add" element={<NewQuotation />} />
+        <Route path="quotation/:id" element={<QuotationDetails />} />    
+        
       </Route>
     </Routes>
   );

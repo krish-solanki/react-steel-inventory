@@ -38,11 +38,15 @@ const Sidebar = () => {
           Products
         </NavLink>
 
-        <NavLink to="/warehouse" className="nav-link text-light">
+        <NavLink to="/warehouse" className = {({ isActive }) =>
+            isActive
+              ? "nav-link rounded mb-2 px-3 py-2 bg-primary text-white"
+              : "nav-link text-light rounded mb-2 px-3 py-2"
+          }>
           <i className="fa fa-warehouse me-2"></i>Warehouses
         </NavLink>
 
-        <NavLink to="/quotations" className="nav-link text-light">
+        <NavLink to="/quotation" className="nav-link text-light">
           <i className="fa fa-file-invoice me-2"></i>Quotations
         </NavLink>
 

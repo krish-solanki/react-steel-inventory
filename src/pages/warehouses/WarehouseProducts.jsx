@@ -62,7 +62,7 @@ const WarehouseProducts = () => {
 
           <button
             className="btn btn-secondary"
-            onClick={() => navigate("/warehouses")}
+            onClick={() => navigate("/warehouse")}
           >
             Back to Warehouses
           </button>
