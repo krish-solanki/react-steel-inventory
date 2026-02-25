@@ -57,7 +57,7 @@ const Sidebar = () => {
           Sales
         </NavLink>
 
-        <NavLink to="/" className="nav-link text-light rounded mb-2 px-3 py-2">
+        <NavLink to="login" className="nav-link text-light rounded mb-2 px-3 py-2">
           <i className="fa-solid fa-right-from-bracket me-2"></i>
           Logout
         </NavLink>

@@ -10,82 +10,76 @@ const WarehouseProducts = () => {
     { id: 3, name: "Iron Rack", stock: 10, price: 1800, warehouseId: 2 }
   ];
 
-  const filteredProducts = products.filter(
-    (product) => product.warehouseId === parseInt(id)
+  const filtered = products.filter(
+    (p) => p.warehouseId === parseInt(id)
   );
 
-  const handleEdit = (productId) => {
-    navigate(`/warehouses/${id}/product/${productId}`);
-  };
-
-  const handleAddProduct = () => {
-    navigate(`/warehouses/${id}/add-product`);
-  };
-
   return (
-    <div className="container-fluid">
+    <div className="card shadow-sm p-4">
 
-      {/* Header Section */}
+      {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h4 className="fw-bold mb-0">Warehouse Products</h4>
+        <h4 className="mb-0">Warehouse Products</h4>
 
         <button
-          className="btn btn-primary"
-          onClick={handleAddProduct}
+          className="btn btn-primary px-4"
+          onClick={() => navigate(`/warehouse/${id}/add-product`)}
         >
           <i className="fa fa-plus me-2"></i>
           Add Product
         </button>
       </div>
 
-      <div className="card shadow-sm">
-        <div className="card-body">
+      {/* Table */}
+      <table className="table">
+        <thead className="table-light">
+          <tr>
+            <th>Name</th>
+            <th>Stock</th>
+            <th>Price</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filtered.map((p) => (
+            <tr key={p.id}>
+              <td>{p.name}</td>
+              <td>{p.stock}</td>
+              <td>₹{p.price}</td>
+              <td>
+                <button
+                  className="btn btn-sm btn-primary"
+                  onClick={() =>
+                    navigate(`/warehouse/${id}/product/${p.id}`)
+                  }
+                >
+                  Edit
+                </button>
+              </td>
+            </tr>
+          ))}
 
-          <table className="table">
-            <thead className="table-light">
-              <tr>
-                <th>Name</th>
-                <th>Stock</th>
-                <th>Price</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredProducts.map((product) => (
-                <tr key={product.id}>
-                  <td>{product.name}</td>
-                  <td>{product.stock}</td>
-                  <td>₹{product.price}</td>
-                  <td>
-                    <button
-                      className="btn btn-sm btn-primary"
-                      onClick={() => handleEdit(product.id)}
-                    >
-                      Edit
-                    </button>
-                  </td>
-                </tr>
-              ))}
+          {filtered.length === 0 && (
+            <tr>
+              <td colSpan="4" className="text-center">
+                No Products Found
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
 
-              {filteredProducts.length === 0 && (
-                <tr>
-                  <td colSpan="4" className="text-center">
-                    No Products Found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-
-          <button
-            className="btn btn-secondary mt-3"
-            onClick={() => navigate("/warehouses")}
-          >
-            Back to Warehouses
-          </button>
-
-        </div>
+      {/* Back Button Right Side */}
+      <div className="d-flex justify-content-end mt-4">
+        <button
+          className="btn btn-outline-secondary px-4"
+          onClick={() => navigate("/warehouse")}
+        >
+          <i className="fa fa-arrow-left me-2"></i>
+          Back
+        </button>
       </div>
+
     </div>
   );
 };
