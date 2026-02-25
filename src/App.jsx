@@ -17,6 +17,9 @@ import WarehouseProducts from "./pages/warehouses/WarehouseProducts";
 import Quotations from "./pages/quotations/Quotations";
 import NewQuotation from "./pages/quotations/NewQuotation";
 import QuotationDetails from "./pages/quotations/QuotationDetails";
+
+// Stock Adjustment
+import StockAdjustment from "./pages/stock/StockAdjustment";
 function App() {
   return (
     <Routes>
@@ -37,8 +40,10 @@ function App() {
         {/* Quontations Routes */}
         <Route path="quotation" element={<Quotations/>}/>    
         <Route path="quotation/add" element={<NewQuotation />} />
-        <Route path="quotation/:id" element={<QuotationDetails />} />    
-        
+        <Route path="quotation/:id" element={<QuotationDetails />} />
+
+       {/* Stock Adjustment  */}
+        <Route path="stock-adjustment" element={<StockAdjustment />} />        
       </Route>
     </Routes>
   );

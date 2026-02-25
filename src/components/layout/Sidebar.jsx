@@ -54,7 +54,7 @@ const Sidebar = () => {
           <i className="fa fa-file-invoice me-2"></i>Quotations
         </NavLink>
 
-        <NavLink to="/" className="nav-link text-light">
+        <NavLink to="stock-adjustment" className="nav-link text-light">
           <i className="fa fa-right-from-bracket me-2"></i>Adjust Stock
         </NavLink>
 
