@@ -14,19 +14,39 @@ const Register = () => {
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  if (form.password !== form.confirmPassword) {
+    alert("Passwords do not match!");
+    return;
+  }
 
-    if (form.password !== form.confirmPassword) {
-      alert("Passwords do not match!");
-      return;
+  try {
+    const response = await fetch("http://localhost:5000/api/users/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: form.username,
+        email: form.email,
+        password: form.password
+      })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert("Registration Successful");
+      navigate("/login");
+    } else {
+      alert(data.message);
     }
 
-    console.log("Register Data:", form);
-    navigate("/");
-  };
-
+  } catch (err) {
+    console.log(err);
+    alert("Server error");
+  }
+};
   return (
     <div
       className="d-flex justify-content-center align-items-center"
