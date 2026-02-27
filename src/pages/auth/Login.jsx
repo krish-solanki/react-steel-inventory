@@ -1,29 +1,41 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Login = () => {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    username: "",
+    email: "",
     password: ""
   });
-
-  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Dummy login check
-    if (form.username === "admin" && form.password === "1234") {
-      setError("");
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/login",
+        {
+          email: form.email,
+          password: form.password
+        }
+      );
+
+      alert("Login Successful");
+
+      console.log(response.data);
+
       navigate("/dashboard");
-    } else {
-      navigate("/dashboard");
+
+    } catch (error) {
+      alert(
+        error.response?.data?.message || "Invalid Email or Password"
+      );
     }
   };
 
@@ -32,11 +44,8 @@ const Login = () => {
       className="d-flex justify-content-center align-items-center"
       style={{ minHeight: "100vh", background: "#f4f6f9" }}
     >
-      <div
-        className="card shadow p-4"
-        style={{ width: "400px", borderRadius: "15px" }}
-      >
-        {/* Logo */}
+      <div className="card shadow p-4" style={{ width: "400px", borderRadius: "15px" }}>
+
         <div className="text-center mb-4">
           <div
             style={{
@@ -62,30 +71,23 @@ const Login = () => {
 
         <h3 className="text-center mb-4">Login</h3>
 
-        {error && (
-          <div className="alert alert-danger text-center py-2">
-            {error}
-          </div>
-        )}
-
         <form onSubmit={handleSubmit}>
-          {/* Username */}
+
           <div className="input-group mb-3">
             <span className="input-group-text">
-              <i className="fa fa-user"></i>
+              <i className="fa fa-envelope"></i>
             </span>
             <input
-              type="text"
+              type="email"
               className="form-control"
-              placeholder="Username"
-              name="username"
-              value={form.username}
+              placeholder="Email"
+              name="email"
+              value={form.email}
               onChange={handleChange}
               required
             />
           </div>
 
-          {/* Password */}
           <div className="input-group mb-4">
             <span className="input-group-text">
               <i className="fa fa-key"></i>
@@ -101,7 +103,6 @@ const Login = () => {
             />
           </div>
 
-          {/* Login Button */}
           <button
             type="submit"
             className="btn w-100"
@@ -114,17 +115,16 @@ const Login = () => {
           >
             Login
           </button>
+
         </form>
 
         <div className="text-center mt-3">
           Don’t have an account?{" "}
-          <Link
-            to="/register"
-            style={{ color: "#2563eb", textDecoration: "none" }}
-          >
+          <Link to="/register" style={{ color: "#2563eb", textDecoration: "none" }}>
             Register here
           </Link>
         </div>
+
       </div>
     </div>
   );
