@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const AddWarehouse = () => {
   const navigate = useNavigate();
@@ -13,28 +14,46 @@ const AddWarehouse = () => {
   });
 
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
+  setLoading(true);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  if (!form.name || !form.location || !form.contact_no || !form.manager_name) {
+    setError("All required fields must be filled!");
+    setLoading(false);
+    return;
+  }
 
-    if (
-      !form.name ||
-      !form.location ||
-      !form.contact_no ||
-      !form.manager_name
-    ) {
-      setError("All required fields must be filled!");
-      return;
-    }
+  try {
+    const { data } = await axios.post(
+      "http://localhost:5000/api/warehouses",
+      {
+        name: form.name,
+        city: form.location,
+        contactNumber: form.contact_no,
+        managerName: form.manager_name,
+        address: form.description,
+      }
+    );
 
-    console.log("Warehouse Data:", form);
+    console.log("Saved from backend:", data);
 
-    navigate("/warehouses");
-  };
+    alert("Warehouse added successfully");
+    navigate("/warehouse");
+
+  } catch (err) {
+    console.log(err);
+    setError(err.response?.data?.message || "Server error");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="card shadow-sm">
@@ -125,14 +144,17 @@ const AddWarehouse = () => {
               <button
                 type="button"
                 className="btn btn-secondary me-2"
-                onClick={() => navigate("/warehouses")}
+                onClick={() => navigate("/warehouse")}
               >
                 Cancel
               </button>
 
-              <button type="submit" className="btn btn-success">
-                <i className="fa fa-plus me-2"></i>
-                Add Warehouse
+              <button
+                type="submit"
+                className="btn btn-success"
+                disabled={loading}
+              >
+                {loading ? "Saving..." : "Add Warehouse"}
               </button>
             </div>
           </div>
