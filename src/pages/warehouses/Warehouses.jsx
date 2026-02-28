@@ -1,50 +1,70 @@
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
 
 const Warehouses = () => {
-  const navigate = useNavigate();
+  const [warehouses, setWarehouses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const warehouses = [
-    { id: 1, name: "Main Warehouse", location: "Bangalore", items: 45 },
-    { id: 2, name: "Secondary Warehouse", location: "Mumbai", items: 20 }
-  ];
+  useEffect(() => {
+    const fetchWarehouses = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/warehouses");
+        setWarehouses(res.data);
+      } catch (err) {
+        setError(err.response?.data?.message || "Failed to load warehouses");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchWarehouses();
+  }, []);
 
   return (
-    <div className="card shadow-sm p-4">
+    <div className="card p-3 shadow">
+      <div className="d-flex justify-content-between align-items-center">
+        <h5 className="mb-0">Warehouses</h5>
 
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h4>Warehouses</h4>
-        <button
-          className="btn btn-primary"
-          onClick={() => navigate("/warehouse/add")}
-        >
-          <i className="fa fa-plus me-2"></i>
-          Add Warehouse
-        </button>
+        <Link to="/warehouse/add" className="btn btn-primary">
+          + Add Warehouse
+        </Link>
       </div>
 
-      <table className="table table-hover">
-        <thead className="table-light">
-          <tr>
-            <th>Name</th>
-            <th>Location</th>
-            <th>Items</th>
-          </tr>
-        </thead>
-        <tbody>
-          {warehouses.map((w) => (
-            <tr
-              key={w.id}
-              style={{ cursor: "pointer" }}
-              onClick={() => navigate(`/warehouse/${w.id}`)}
-            >
-              <td>{w.name}</td>
-              <td>{w.location}</td>
-              <td>{w.items}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {loading && <p className="mt-3">Loading warehouses...</p>}
+      {error && <p className="text-danger mt-3">{error}</p>}
 
+      {!loading && !error && (
+        <table className="table mt-3">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>City</th>
+              <th>Contact</th>
+              <th>Manager</th>
+            </tr>
+          </thead>
+          <tbody>
+            {warehouses.length === 0 ? (
+              <tr>
+                <td colSpan="4" className="text-center">
+                  No warehouses found
+                </td>
+              </tr>
+            ) : (
+              warehouses.map((w) => (
+                <tr key={w._id}>
+                  <td>{w.name}</td>
+                  <td>{w.city}</td>
+                  <td>{w.contactNumber}</td>
+                  <td>{w.managerName}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };
