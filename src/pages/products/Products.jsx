@@ -1,10 +1,26 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const Products = () => {
-  const products = [
-    { sku:"482103", name:"Metal Locker", category:"Storage", price:7500, stock:10 ,warehouse:"Rajkot"},
-    { sku:"991025", name:"Steel Chair", category:"Furniture", price:1500, stock:5 ,warehouse:"Surat"},
-  ];
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/products");
+        setProducts(res.data);
+      } catch (err) {
+        setError(err.response?.data?.message || "Failed to load products");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   return (
     <div className="card p-3 shadow">
@@ -16,30 +32,37 @@ const Products = () => {
         </Link>
       </div>
 
-      <table className="table mt-3">
-        <thead>
-          <tr>
-            <th>SKU</th>
-            <th>Name</th>
-            <th>Category</th>
-            <th>Price</th>
-            <th>Stock</th>
-            <th>Warehouse</th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.map((p,i)=>(
-            <tr key={i}>
-              <td>{p.sku}</td>
-              <td>{p.name}</td>
-              <td>{p.category}</td>
-              <td>₹{p.price}</td>
-              <td>{p.stock}</td>
-              <td>{p.warehouse}</td>
+      {loading && <p className="mt-3">Loading products...</p>}
+      {error && <p className="text-danger mt-3">{error}</p>}
+
+      {!loading && !error && (
+        <table className="table mt-3">
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>Name</th>
+              <th>Price</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {products.length === 0 ? (
+              <tr>
+                <td colSpan="3" className="text-center">
+                  No products found
+                </td>
+              </tr>
+            ) : (
+              products.map((p) => (
+                <tr key={p._id}>
+                  <td>{p.sku}</td>
+                  <td>{p.name}</td>
+                  <td>₹{p.sellingPrice}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };
