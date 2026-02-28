@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const AddProduct = () => {
   const navigate = useNavigate();
@@ -15,19 +16,45 @@ const AddProduct = () => {
     description: ""
   });
 
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Product Data:", form);
-    navigate("/products");
+    setError("");
+    setLoading(true);
+
+    try {
+      await axios.post("http://localhost:5000/api/products", {
+        name: form.name,
+        sku: form.sku,
+        category: form.category,
+        material: form.material,
+        dimensions: form.description || "N/A",
+        costPrice: Number(form.cost_price),
+        sellingPrice: Number(form.sell_price),
+        minimumStock: Number(form.stock)
+      });
+
+      alert("Product added successfully");
+      navigate("/products");
+
+    } catch (err) {
+      setError(err.response?.data?.message || "Server error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="card shadow-sm p-4">
       <h4 className="mb-4">Add New Product</h4>
+
+      {error && <div className="alert alert-danger">{error}</div>}
 
       <form onSubmit={handleSubmit}>
         <div className="row">
@@ -40,7 +67,6 @@ const AddProduct = () => {
               type="text"
               name="name"
               className="form-control"
-              placeholder="Enter product name"
               value={form.name}
               onChange={handleChange}
               required
@@ -55,7 +81,6 @@ const AddProduct = () => {
               type="text"
               name="sku"
               className="form-control"
-              placeholder="Enter SKU"
               value={form.sku}
               onChange={handleChange}
               required
@@ -103,7 +128,6 @@ const AddProduct = () => {
               type="number"
               name="cost_price"
               className="form-control"
-              placeholder="Enter cost price"
               value={form.cost_price}
               onChange={handleChange}
               required
@@ -118,7 +142,6 @@ const AddProduct = () => {
               type="number"
               name="sell_price"
               className="form-control"
-              placeholder="Enter sell price"
               value={form.sell_price}
               onChange={handleChange}
               required
@@ -133,7 +156,6 @@ const AddProduct = () => {
               type="number"
               name="stock"
               className="form-control"
-              placeholder="Enter initial stock quantity"
               value={form.stock}
               onChange={handleChange}
               required
@@ -159,6 +181,7 @@ const AddProduct = () => {
             <button
               type="submit"
               className="btn"
+              disabled={loading}
               style={{
                 background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
                 color: "#fff",
@@ -166,8 +189,7 @@ const AddProduct = () => {
                 borderRadius: "8px"
               }}
             >
-              <i className="fa fa-plus me-2"></i>
-              Add Product
+              {loading ? "Saving..." : "Add Product"}
             </button>
           </div>
         </div>
