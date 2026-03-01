@@ -6,47 +6,40 @@ const AddProduct = () => {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    sku: "",
     name: "",
+    sku: "",
     category: "",
-    sell_price: "",
-    cost_price: "",
-    stock: "",
     material: "",
-    description: ""
+    dimensions: "",
+    costPrice: "",
+    sellingPrice: "",
+    minimumStock: 5
   });
 
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setLoading(true);
 
     try {
       await axios.post("http://localhost:5000/api/products", {
-        name: form.name,
-        sku: form.sku,
-        category: form.category,
-        material: form.material,
-        dimensions: form.description || "N/A",
-        costPrice: Number(form.cost_price),
-        sellingPrice: Number(form.sell_price),
-        minimumStock: Number(form.stock)
+        ...form,
+        costPrice: Number(form.costPrice),
+        sellingPrice: Number(form.sellingPrice),
+        minimumStock: Number(form.minimumStock)
       });
 
-      alert("Product added successfully");
       navigate("/products");
 
     } catch (err) {
-      setError(err.response?.data?.message || "Server error");
-    } finally {
-      setLoading(false);
+      setError(err.response?.data?.message || "Failed to add product");
     }
   };
 
@@ -54,15 +47,13 @@ const AddProduct = () => {
     <div className="card shadow-sm p-4">
       <h4 className="mb-4">Add New Product</h4>
 
-      {error && <div className="alert alert-danger">{error}</div>}
+      {error && <p className="text-danger">{error}</p>}
 
       <form onSubmit={handleSubmit}>
         <div className="row">
 
           <div className="col-md-6 mb-3">
-            <label className="form-label">
-              Product Name <span className="text-danger">*</span>
-            </label>
+            <label>Product Name</label>
             <input
               type="text"
               name="name"
@@ -74,9 +65,7 @@ const AddProduct = () => {
           </div>
 
           <div className="col-md-6 mb-3">
-            <label className="form-label">
-              SKU <span className="text-danger">*</span>
-            </label>
+            <label>SKU</label>
             <input
               type="text"
               name="sku"
@@ -88,75 +77,72 @@ const AddProduct = () => {
           </div>
 
           <div className="col-md-6 mb-3">
-            <label className="form-label">
-              Category <span className="text-danger">*</span>
-            </label>
-            <select
+            <label>Category</label>
+            <input
+              type="text"
               name="category"
-              className="form-select"
+              className="form-control"
               value={form.category}
               onChange={handleChange}
               required
-            >
-              <option value="">Select category</option>
-              <option>Furniture</option>
-              <option>Chair</option>
-              <option>Table</option>
-              <option>Locker</option>
-            </select>
+            />
           </div>
 
           <div className="col-md-6 mb-3">
-            <label className="form-label">Material</label>
-            <select
+            <label>Material</label>
+            <input
+              type="text"
               name="material"
-              className="form-select"
+              className="form-control"
               value={form.material}
               onChange={handleChange}
-            >
-              <option value="">Select material</option>
-              <option>Steel</option>
-              <option>Wood</option>
-            </select>
+              required
+            />
           </div>
 
           <div className="col-md-6 mb-3">
-            <label className="form-label">
-              Cost Price (₹) <span className="text-danger">*</span>
-            </label>
+            <label>Dimensions</label>
             <input
-              type="number"
-              name="cost_price"
+              type="text"
+              name="dimensions"
               className="form-control"
-              value={form.cost_price}
+              value={form.dimensions}
               onChange={handleChange}
               required
             />
           </div>
 
           <div className="col-md-6 mb-3">
-            <label className="form-label">
-              Sell Price (₹) <span className="text-danger">*</span>
-            </label>
+            <label>Cost Price</label>
             <input
               type="number"
-              name="sell_price"
+              name="costPrice"
               className="form-control"
-              value={form.sell_price}
+              value={form.costPrice}
               onChange={handleChange}
               required
             />
           </div>
 
           <div className="col-md-6 mb-3">
-            <label className="form-label">
-              Initial Stock <span className="text-danger">*</span>
-            </label>
+            <label>Selling Price</label>
             <input
               type="number"
-              name="stock"
+              name="sellingPrice"
               className="form-control"
-              value={form.stock}
+              value={form.sellingPrice}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="col-md-6 mb-3">
+            <label>Minimum Stock</label>
+            <input
+              type="number"
+              name="minimumStock"
+              className="form-control"
+              value={form.minimumStock}
               onChange={handleChange}
               required
             />
@@ -164,34 +150,10 @@ const AddProduct = () => {
 
         </div>
 
-        <div className="d-flex justify-content-between mt-3">
-          <small className="text-muted">
-            * indicates required fields
-          </small>
-
-          <div>
-            <button
-              type="button"
-              className="btn btn-secondary me-2"
-              onClick={() => navigate("/products")}
-            >
-              Cancel
-            </button>
-
-            <button
-              type="submit"
-              className="btn"
-              disabled={loading}
-              style={{
-                background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
-                color: "#fff",
-                padding: "8px 20px",
-                borderRadius: "8px"
-              }}
-            >
-              {loading ? "Saving..." : "Add Product"}
-            </button>
-          </div>
+        <div className="text-end">
+          <button type="submit" className="btn btn-primary">
+            Add Product
+          </button>
         </div>
 
       </form>

@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Warehouses = () => {
   const [warehouses, setWarehouses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchWarehouses = async () => {
@@ -54,7 +56,11 @@ const Warehouses = () => {
               </tr>
             ) : (
               warehouses.map((w) => (
-                <tr key={w._id}>
+                <tr
+                  key={w._id}
+                  style={{ cursor: "pointer" }}
+                  onClick={() => navigate(`/warehouse/${w._id}`)}
+                >
                   <td>{w.name}</td>
                   <td>{w.city}</td>
                   <td>{w.contactNumber}</td>

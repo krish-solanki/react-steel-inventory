@@ -1,23 +1,35 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const WarehouseProducts = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const products = [
-    { id: 1, name: "Steel Chair", stock: 20, price: 1200, warehouseId: 1 },
-    { id: 2, name: "Steel Table", stock: 25, price: 2500, warehouseId: 1 },
-    { id: 3, name: "Iron Rack", stock: 10, price: 1800, warehouseId: 2 }
-  ];
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const filtered = products.filter(
-    (p) => p.warehouseId === parseInt(id)
-  );
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:5000/api/product-warehouse-stock/warehouse/${id}`
+        );
+        setProducts(res.data);
+      } catch (err) {
+        setError(err.response?.data?.message || "Failed to load products");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [id]);
 
   return (
     <div className="card shadow-sm p-4">
 
-      {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4 className="mb-0">Warehouse Products</h4>
 
@@ -30,46 +42,49 @@ const WarehouseProducts = () => {
         </button>
       </div>
 
-      {/* Table */}
-      <table className="table">
-        <thead className="table-light">
-          <tr>
-            <th>Name</th>
-            <th>Stock</th>
-            <th>Price</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filtered.map((p) => (
-            <tr key={p.id}>
-              <td>{p.name}</td>
-              <td>{p.stock}</td>
-              <td>₹{p.price}</td>
-              <td>
-                <button
-                  className="btn btn-sm btn-primary"
-                  onClick={() =>
-                    navigate(`/warehouse/${id}/product/${p.id}`)
-                  }
-                >
-                  Edit
-                </button>
-              </td>
-            </tr>
-          ))}
+      {loading && <p>Loading products...</p>}
+      {error && <p className="text-danger">{error}</p>}
 
-          {filtered.length === 0 && (
+      {!loading && !error && (
+        <table className="table">
+          <thead className="table-light">
             <tr>
-              <td colSpan="4" className="text-center">
-                No Products Found
-              </td>
+              <th>Name</th>
+              <th>Stock</th>
+              <th>Price</th>
+              <th>Action</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {products.length === 0 ? (
+              <tr>
+                <td colSpan="4" className="text-center">
+                  No Products Found
+                </td>
+              </tr>
+            ) : (
+              products.map((item) => (
+                <tr key={item._id}>
+                  <td>{item.productId?.name}</td>
+                  <td>{item.quantity}</td>
+                  <td>₹{item.productId?.sellingPrice}</td>
+                  <td>
+                    <button
+                      className="btn btn-sm btn-primary"
+                      onClick={() =>
+                        navigate(`/warehouse/${id}/product/${item._id}`)
+                      }
+                    >
+                      Edit
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      )}
 
-      {/* Back Button Right Side */}
       <div className="d-flex justify-content-end mt-4">
         <button
           className="btn btn-outline-secondary px-4"

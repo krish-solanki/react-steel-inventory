@@ -1,34 +1,61 @@
-import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const AddWarehouseProduct = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  const [products, setProducts] = useState([]);
   const [form, setForm] = useState({
     productId: "",
-    stock: ""
+    quantity: 0
   });
 
-  const products = [
-    { id: 1, name: "Steel Chair" },
-    { id: 2, name: "Steel Table" },
-    { id: 3, name: "Iron Rack" }
-  ];
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/products");
+        setProducts(res.data);
+      } catch (err) {
+  setError(err.response?.data?.message || "Failed to load products");
+}
+    };
+
+    fetchProducts();
+  }, []);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
+    });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Add Product To Warehouse:", id, form);
-    navigate(`/warehouse/${id}`);
+
+    try {
+      await axios.post("http://localhost:5000/api/product-warehouse-stock", {
+        productId: form.productId,
+        warehouseId: id,
+        quantity: Number(form.quantity)
+      });
+
+      navigate(`/warehouse/${id}`);
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to add product");
+    }
   };
 
   return (
     <div className="card shadow-sm p-4">
-      <h4 className="mb-4">Add Product to Warehouse</h4>
+
+      <h4 className="mb-4">Add Product To Warehouse</h4>
+
+      {error && <p className="text-danger">{error}</p>}
 
       <form onSubmit={handleSubmit}>
 
@@ -41,40 +68,43 @@ const AddWarehouseProduct = () => {
             onChange={handleChange}
             required
           >
-            <option value="">Select Product</option>
+            <option value="">Choose product</option>
             {products.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
+              <option key={p._id} value={p._id}>
+                {p.name} (₹{p.sellingPrice})
               </option>
             ))}
           </select>
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Stock Quantity</label>
+          <label className="form-label">Quantity</label>
           <input
             type="number"
-            name="stock"
+            name="quantity"
             className="form-control"
-            value={form.stock}
+            value={form.quantity}
             onChange={handleChange}
             required
           />
         </div>
 
-        <button type="submit" className="btn btn-primary me-2">
-          Add
-        </button>
+        <div className="d-flex justify-content-end">
+          <button
+            type="button"
+            className="btn btn-secondary me-2"
+            onClick={() => navigate(`/warehouse/${id}`)}
+          >
+            Cancel
+          </button>
 
-        <button
-          type="button"
-          className="btn btn-secondary"
-          onClick={() => navigate(`/warehouse/${id}`)}
-        >
-          Cancel
-        </button>
+          <button type="submit" className="btn btn-primary">
+            Save
+          </button>
+        </div>
 
       </form>
+
     </div>
   );
 };
