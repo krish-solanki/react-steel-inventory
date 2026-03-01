@@ -42,7 +42,7 @@ const Sidebar = () => {
           Quotations
         </NavLink>
 
-        <NavLink to="/stock-adjustment" className={linkClass}>
+        <NavLink to="/stock_adj" className={linkClass}>
           <i className="fa-solid fa-right-left me-2"></i>
           Adjust Stock
         </NavLink>

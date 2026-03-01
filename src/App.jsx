@@ -30,6 +30,10 @@ import Sales from "./pages/sales/Sales";
 import NewSales from "./pages/sales/NewSales";
 import SalesDetails from "./pages/sales/SalesDetails";
 
+/* Stock Adj */ 
+import StockAdjustment from "./pages/stock/StockAdjustment";
+
+
 function App() {
   return (
     <Routes>
@@ -61,6 +65,8 @@ function App() {
         <Route path="sales" element={<Sales />} />
         <Route path="sales/add" element={<NewSales />} />
         <Route path="sales/:id" element={<SalesDetails />} />
+
+        <Route path="stock_adj" element={<StockAdjustment/>}/>
 
       </Route>
 

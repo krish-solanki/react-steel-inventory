@@ -12,7 +12,7 @@ const Layout = () => {
     if (path.includes("products")) return "Products";
     if (path.includes("warehouse")) return "Warehouses";
     if (path.includes("quotation")) return "Quotations";
-    if (path.includes("stock-adjustment")) return "Adjust Stock";
+    if (path.includes("stock_adj")) return "Adjust Stock";
     if (path.includes("low-stock")) return "Warehouse Stock";
     if (path.includes("sales")) return "Sales";
 

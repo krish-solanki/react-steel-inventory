@@ -1,43 +1,35 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
+
 const StockAdjustment = () => {
-  const adjustments = [
-    {
-      id: 1,
-      date: "24-Feb-2026 11:27",
-      product: "Chair",
-      warehouse: "Main Store",
-      type: "OUT",
-      qty: 2,
-      reason: "Sale",
-      remarks: "",
-      by: "admin"
-    },
-    {
-      id: 2,
-      date: "24-Feb-2026 11:11",
-      product: "Table",
-      warehouse: "Ahmedabad Store",
-      type: "OUT",
-      qty: 2,
-      reason: "Sale",
-      remarks: "",
-      by: "admin"
-    },
-    {
-      id: 3,
-      date: "24-Feb-2026 11:04",
-      product: "Table",
-      warehouse: "Main Store",
-      type: "OUT",
-      qty: 1,
-      reason: "Sell",
-      remarks: "Initial stock",
-      by: "admin"
-    }
-  ];
+  const [adjustments, setAdjustments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchAdjustments = async () => {
+      try {
+        const res = await axios.get(
+          "http://localhost:5000/api/stock-adjustments"
+        );
+        setAdjustments(res.data);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load stock adjustments");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAdjustments();
+  }, []);
+
+  const formatDate = (date) => {
+    return new Date(date).toLocaleString("en-GB");
+  };
 
   return (
     <div className="card shadow-sm border-0">
-
       <div className="card-body">
 
         <div className="mb-4">
@@ -49,53 +41,64 @@ const StockAdjustment = () => {
           </p>
         </div>
 
-        <div className="table-responsive">
-          <table className="table table-hover align-middle">
-            <thead className="table-light">
-              <tr>
-                <th>Date</th>
-                <th>Product</th>
-                <th>Warehouse</th>
-                <th>Type</th>
-                <th>Qty</th>
-                <th>Reason</th>
-                <th>Remarks</th>
-                <th>Adjusted By</th>
-              </tr>
-            </thead>
+        {loading && <p>Loading adjustments...</p>}
+        {error && <p className="text-danger">{error}</p>}
 
-            <tbody>
-              {adjustments.map((item) => (
-                <tr key={item.id}>
-                  <td>{item.date}</td>
-                  <td>{item.product}</td>
-                  <td>{item.warehouse}</td>
-
-                  <td>
-                    <span
-                      className={`badge ${
-                        item.type === "OUT"
-                          ? "bg-danger"
-                          : "bg-success"
-                      }`}
-                    >
-                      {item.type}
-                    </span>
-                  </td>
-
-                  <td>{item.qty}</td>
-                  <td>{item.reason}</td>
-                  <td>{item.remarks || "-"}</td>
-                  <td>{item.by}</td>
+        {!loading && !error && (
+          <div className="table-responsive">
+            <table className="table table-hover align-middle">
+              <thead className="table-light">
+                <tr>
+                  <th>Date</th>
+                  <th>Product</th>
+                  <th>Warehouse</th>
+                  <th>Type</th>
+                  <th>Qty</th>
+                  <th>Reason</th>
+                  <th>Remarks</th>
+                  <th>Adjusted By</th>
                 </tr>
-              ))}
-            </tbody>
+              </thead>
 
-          </table>
-        </div>
+              <tbody>
+                {adjustments.length === 0 ? (
+                  <tr>
+                    <td colSpan="8" className="text-center">
+                      No stock adjustments found
+                    </td>
+                  </tr>
+                ) : (
+                  adjustments.map((item) => (
+                    <tr key={item._id}>
+                      <td>{formatDate(item.adjustedAt)}</td>
+                      <td>{item.productId?.name}</td>
+                      <td>{item.warehouseId?.name}</td>
 
+                      <td>
+                        <span
+                          className={`badge ${
+                            item.adjustmentType === "Decrease"
+                              ? "bg-danger"
+                              : "bg-success"
+                          }`}
+                        >
+                          {item.adjustmentType}
+                        </span>
+                      </td>
+
+                      <td>{item.quantity}</td>
+                      <td>{item.reason}</td>
+                      <td>{item.remarks || "-"}</td>
+                      <td>{item.adjustedBy?.name}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+
+            </table>
+          </div>
+        )}
       </div>
-
     </div>
   );
 };
