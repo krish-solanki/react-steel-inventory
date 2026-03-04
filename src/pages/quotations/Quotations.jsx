@@ -15,9 +15,9 @@ const Quotations = () => {
         const res = await axios.get("http://localhost:5000/api/quotations");
         setQuotations(res.data);
       } catch (err) {
-  console.error(err);
-  setError(err.response?.data?.message || "Failed to load quotations");
-} finally {
+        console.error(err);
+        setError(err.response?.data?.message || "Failed to load quotations");
+      } finally {
         setLoading(false);
       }
     };
@@ -26,6 +26,7 @@ const Quotations = () => {
   }, []);
 
   const formatDate = (date) => {
+    if (!date) return "-";
     return new Date(date).toLocaleDateString("en-GB");
   };
 
@@ -63,6 +64,7 @@ const Quotations = () => {
               <th>Status</th>
             </tr>
           </thead>
+
           <tbody>
             {quotations.length === 0 ? (
               <tr>
@@ -77,20 +79,20 @@ const Quotations = () => {
                   style={{ cursor: "pointer" }}
                   onClick={() => navigate(`/quotation/${q._id}`)}
                 >
-                  <td>{formatDate(q.quotationDate)}</td>
-                  <td>{q.customerName}</td>
-                  <td>₹{q.totalAmount}</td>
+                  <td>{formatDate(q.QuotationDate)}</td>
+                  <td>{q.CustomerName}</td>
+                  <td>₹{q.TotalAmount}</td>
                   <td>
                     <span
                       className={`badge ${
-                        q.status === "Approved"
+                        q.Status === "Approved"
                           ? "bg-success"
-                          : q.status === "Draft"
+                          : q.Status === "Draft"
                           ? "bg-secondary"
                           : "bg-warning text-dark"
                       }`}
                     >
-                      {q.status}
+                      {q.Status}
                     </span>
                   </td>
                 </tr>

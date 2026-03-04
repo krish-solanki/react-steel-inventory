@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -7,22 +7,46 @@ const NewQuotation = () => {
 
   const [customerName, setCustomerName] = useState("");
   const [quotationDate, setQuotationDate] = useState("");
+
+  const [products, setProducts] = useState([]);
+
   const [rows, setRows] = useState([
-    { product: "Metal Locker", price: 7500, quantity: 1 }
+    { productId: "", price: 0, quantity: 1 }
   ]);
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/products");
+        setProducts(res.data);
+      } catch (err) {
+        console.error("Failed to load products", err);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
   const handleChange = (index, field, value) => {
     const updated = [...rows];
-    updated[index][field] =
-      field === "product" ? value : Number(value);
+
+    if (field === "productId") {
+      const selectedProduct = products.find(p => p._id === value);
+
+      updated[index].productId = value;
+      updated[index].price = selectedProduct?.sellingPrice || 0;
+    } else {
+      updated[index][field] = Number(value);
+    }
+
     setRows(updated);
   };
 
   const addRow = () => {
-    setRows([...rows, { product: "", price: 0, quantity: 1 }]);
+    setRows([...rows, { productId: "", price: 0, quantity: 1 }]);
   };
 
   const subtotal = rows.reduce(
@@ -36,27 +60,40 @@ const NewQuotation = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
 
-    if (!customerName) {
-      setError("Customer name is required");
-      setLoading(false);
-      return;
-    }
-
     try {
-      await axios.post("http://localhost:5000/api/quotations", {
-        customerName,
-        totalAmount: grandTotal,
-        createdBy: "69a12394c48d62ce9d536b36"
-      });
+
+      const quotationRes = await axios.post(
+        "http://localhost:5000/api/quotations",
+        {
+          CustomerName: customerName,
+          QuotationDate: quotationDate,
+          TotalAmount: grandTotal,
+          CreatedBy: "69a12394c48d62ce9d536b36"
+        }
+      );
+
+      const quotationId = quotationRes.data.quotation._id;
+
+      const itemRequests = rows.map(row =>
+        axios.post("http://localhost:5000/api/quotation-items", {
+          QuotationId: quotationId,
+          ProductId: row.productId,
+          Quantity: row.quantity,
+          UnitPrice: row.price
+        })
+      );
+
+      await Promise.all(itemRequests);
 
       alert("Quotation saved successfully");
-      navigate("/quotation");
+
+      navigate("/quotations");
 
     } catch (err) {
-      setError(err.response?.data?.message || "Server error");
+      console.error(err);
+      setError("Failed to save quotation");
     } finally {
       setLoading(false);
     }
@@ -78,7 +115,6 @@ const NewQuotation = () => {
               className="form-control"
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
-              placeholder="Enter customer name"
               required
             />
           </div>
@@ -103,18 +139,28 @@ const NewQuotation = () => {
               <th>Total</th>
             </tr>
           </thead>
+
           <tbody>
             {rows.map((row, index) => (
               <tr key={index}>
+
                 <td>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={row.product}
+                  <select
+                    className="form-select"
+                    value={row.productId}
                     onChange={(e) =>
-                      handleChange(index, "product", e.target.value)
+                      handleChange(index, "productId", e.target.value)
                     }
-                  />
+                  >
+                    <option value="">Select Product</option>
+
+                    {products.map((p) => (
+                      <option key={p._id} value={p._id}>
+                        {p.name}
+                      </option>
+                    ))}
+
+                  </select>
                 </td>
 
                 <td>
@@ -140,6 +186,7 @@ const NewQuotation = () => {
                 </td>
 
                 <td>₹{row.price * row.quantity}</td>
+
               </tr>
             ))}
           </tbody>
@@ -161,14 +208,17 @@ const NewQuotation = () => {
                   <th>Subtotal:</th>
                   <td>₹{subtotal.toFixed(2)}</td>
                 </tr>
+
                 <tr>
                   <th>CGST (9%):</th>
                   <td>₹{cgst.toFixed(2)}</td>
                 </tr>
+
                 <tr>
                   <th>SGST (9%):</th>
                   <td>₹{sgst.toFixed(2)}</td>
                 </tr>
+
                 <tr className="fw-bold">
                   <th>Grand Total:</th>
                   <td>₹{grandTotal.toFixed(2)}</td>

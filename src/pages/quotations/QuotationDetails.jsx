@@ -1,23 +1,45 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const QuotationDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // Dummy data (later we make dynamic)
-  const quotation = {
-    id: id,
-    customer: "Taylor Furniture",
-    date: "27/03/2024",
-    products: [
-      { name: "Metal Locker", price: 7500, qty: 1 },
-      { name: "Steel Chair", price: 1500, qty: 5 }
-    ],
-    status: "Pending"
-  };
+  const [quotation, setQuotation] = useState(null);
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const subtotal = quotation.products.reduce(
-    (sum, p) => sum + p.price * p.qty,
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+
+        const quotationRes = await axios.get(
+          `http://localhost:5000/api/quotations/${id}`
+        );
+
+        const itemsRes = await axios.get(
+          `http://localhost:5000/api/quotation-items/quotation/${id}`
+        );
+
+        setQuotation(quotationRes.data);
+        setItems(itemsRes.data);
+
+      } catch (err) {
+        console.error("Failed to load quotation", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [id]);
+
+  if (loading) return <p>Loading...</p>;
+  if (!quotation) return <p>Quotation not found</p>;
+
+  const subtotal = items.reduce(
+    (sum, p) => sum + p.UnitPrice * p.Quantity,
     0
   );
 
@@ -25,11 +47,16 @@ const QuotationDetails = () => {
   const sgst = subtotal * 0.09;
   const grandTotal = subtotal + cgst + sgst;
 
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString("en-GB");
+  };
+
   return (
     <div className="card shadow-sm p-4">
 
       <div className="d-flex justify-content-between mb-4">
         <h4>Quotation Details</h4>
+
         <button
           className="btn btn-secondary"
           onClick={() => navigate("/quotations")}
@@ -40,10 +67,11 @@ const QuotationDetails = () => {
 
       <div className="row mb-4">
         <div className="col-md-6">
-          <strong>Customer:</strong> {quotation.customer}
+          <strong>Customer:</strong> {quotation.CustomerName}
         </div>
+
         <div className="col-md-6 text-end">
-          <strong>Date:</strong> {quotation.date}
+          <strong>Date:</strong> {formatDate(quotation.QuotationDate)}
         </div>
       </div>
 
@@ -56,48 +84,71 @@ const QuotationDetails = () => {
             <th>Total</th>
           </tr>
         </thead>
+
         <tbody>
-          {quotation.products.map((p, index) => (
-            <tr key={index}>
-              <td>{p.name}</td>
-              <td>₹{p.price}</td>
-              <td>{p.qty}</td>
-              <td>₹{p.price * p.qty}</td>
+          {items.length === 0 ? (
+            <tr>
+              <td colSpan="4" className="text-center">
+                No products found
+              </td>
             </tr>
-          ))}
+          ) : (
+            items.map((p) => (
+              <tr key={p._id}>
+                <td>{p.ProductId?.name}</td>
+                <td>₹{p.UnitPrice}</td>
+                <td>{p.Quantity}</td>
+                <td>₹{p.UnitPrice * p.Quantity}</td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
 
       <div className="row justify-content-end mt-4">
         <div className="col-md-4">
+
           <table className="table">
             <tbody>
+
               <tr>
                 <th>Subtotal:</th>
                 <td>₹{subtotal.toFixed(2)}</td>
               </tr>
+
               <tr>
                 <th>CGST (9%):</th>
                 <td>₹{cgst.toFixed(2)}</td>
               </tr>
+
               <tr>
                 <th>SGST (9%):</th>
                 <td>₹{sgst.toFixed(2)}</td>
               </tr>
+
               <tr className="fw-bold">
                 <th>Grand Total:</th>
                 <td>₹{grandTotal.toFixed(2)}</td>
               </tr>
+
               <tr>
                 <th>Status:</th>
                 <td>
-                  <span className={`badge ${quotation.status === "Approved" ? "bg-success" : "bg-warning text-dark"}`}>
-                    {quotation.status}
+                  <span
+                    className={`badge ${
+                      quotation.Status === "Approved"
+                        ? "bg-success"
+                        : "bg-warning text-dark"
+                    }`}
+                  >
+                    {quotation.Status}
                   </span>
                 </td>
               </tr>
+
             </tbody>
           </table>
+
         </div>
       </div>
 

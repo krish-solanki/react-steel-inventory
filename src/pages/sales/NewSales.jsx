@@ -4,20 +4,25 @@ import { useNavigate } from "react-router-dom";
 const NewSales = () => {
   const navigate = useNavigate();
 
+  const [customerName, setCustomerName] = useState("");
   const [rows, setRows] = useState([
-    { product: "Metal Locker", price: 7500, quantity: 1 }
+    { productId: "", warehouseId: "", price: 0, quantity: 1 }
   ]);
 
   const handleChange = (index, field, value) => {
     const updated = [...rows];
-    updated[index][field] = field === "product"
-      ? value
-      : Number(value);
+    updated[index][field] =
+      field === "price" || field === "quantity"
+        ? Number(value)
+        : value;
     setRows(updated);
   };
 
   const addRow = () => {
-    setRows([...rows, { product: "", price: 0, quantity: 1 }]);
+    setRows([
+      ...rows,
+      { productId: "", warehouseId: "", price: 0, quantity: 1 }
+    ]);
   };
 
   const subtotal = rows.reduce(
@@ -29,10 +34,43 @@ const NewSales = () => {
   const sgst = subtotal * 0.09;
   const grandTotal = subtotal + cgst + sgst;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Quotation Data:", rows);
-    navigate("/sales");
+
+    const formattedItems = rows.map((row) => ({
+      ProductId: row.productId,
+      WarehouseId: row.warehouseId,
+      Quantity: row.quantity,
+      UnitPrice: row.price
+    }));
+
+    const payload = {
+      CustomerName: customerName,
+      TotalAmount: grandTotal,
+      items: formattedItems
+    };
+
+    try {
+      const response = await fetch("http://localhost:5000/api/sales", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Sale Created Successfully");
+        navigate("/sales");
+      } else {
+        alert(data.message || "Error creating sale");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Server Error");
+    }
   };
 
   return (
@@ -40,16 +78,16 @@ const NewSales = () => {
       <h4 className="mb-4">New Sales</h4>
 
       <form onSubmit={handleSubmit}>
-
-        {/* Customer + Date */}
         <div className="row mb-4">
           <div className="col-md-6">
             <label className="form-label">Customer</label>
-            <select className="form-select">
-              <option>Taylor Furniture</option>
-              <option>Global Industries</option>
-              <option>Eureka Furnishings</option>
-            </select>
+            <input
+              type="text"
+              className="form-control"
+              value={customerName}
+              onChange={(e) => setCustomerName(e.target.value)}
+              required
+            />
           </div>
 
           <div className="col-md-6">
@@ -58,11 +96,11 @@ const NewSales = () => {
           </div>
         </div>
 
-        {/* Products Table */}
         <table className="table table-bordered align-middle">
           <thead className="table-light">
             <tr>
-              <th>Product</th>
+              <th>Product ID</th>
+              <th>Warehouse ID</th>
               <th>Price</th>
               <th>Quantity</th>
               <th>Total</th>
@@ -72,17 +110,27 @@ const NewSales = () => {
             {rows.map((row, index) => (
               <tr key={index}>
                 <td>
-                  <select
-                    className="form-select"
-                    value={row.product}
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={row.productId}
                     onChange={(e) =>
-                      handleChange(index, "product", e.target.value)
+                      handleChange(index, "productId", e.target.value)
                     }
-                  >
-                    <option value="">Select Product</option>
-                    <option value="Metal Locker">Metal Locker</option>
-                    <option value="Steel Chair">Steel Chair</option>
-                  </select>
+                    required
+                  />
+                </td>
+
+                <td>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={row.warehouseId}
+                    onChange={(e) =>
+                      handleChange(index, "warehouseId", e.target.value)
+                    }
+                    required
+                  />
                 </td>
 
                 <td>
@@ -107,27 +155,22 @@ const NewSales = () => {
                   />
                 </td>
 
-                <td>
-                  ₹{row.price * row.quantity}
-                </td>
+                <td>₹{row.price * row.quantity}</td>
               </tr>
             ))}
           </tbody>
         </table>
 
-        {/* Add Row */}
         <button
           type="button"
           className="btn btn-outline-primary mb-4"
           onClick={addRow}
         >
-          <i className="fa fa-plus me-2"></i>Add Row
+          Add Row
         </button>
 
-        {/* Totals Section */}
         <div className="row justify-content-end">
           <div className="col-md-4">
-
             <table className="table">
               <tbody>
                 <tr>
@@ -148,27 +191,23 @@ const NewSales = () => {
                 </tr>
               </tbody>
             </table>
-
           </div>
         </div>
 
-        {/* Save Button */}
         <div className="text-end">
-            <button
-                type="submit"
-                className="btn"
-                style={{
-                  background: "linear-gradient(135deg, #059669, #047857)",
-                  color: "#fff",
-                  padding: "8px 25px",
-                  borderRadius: "8px"
-                }}
-              >
-                <i className="fa fa-save me-2"></i>
-                Save Quotation
-            </button>
+          <button
+            type="submit"
+            className="btn"
+            style={{
+              background: "linear-gradient(135deg, #059669, #047857)",
+              color: "#fff",
+              padding: "8px 25px",
+              borderRadius: "8px"
+            }}
+          >
+            Save Sale
+          </button>
         </div>
-
       </form>
     </div>
   );
