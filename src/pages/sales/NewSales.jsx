@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const NewSales = () => {
@@ -6,38 +6,38 @@ const NewSales = () => {
   const navigate = useNavigate();
 
   const [customerName, setCustomerName] = useState("");
+  const [warehouseId, setWarehouseId] = useState("");
 
-  const [products, setProducts] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
+  const [products, setProducts] = useState([]);
 
   const [rows, setRows] = useState([
-    { productId: "", warehouseId: "", price: 0, quantity: 1 }
+    { productId: "", price: 0, quantity: 1 }
   ]);
 
   useEffect(() => {
 
-    const fetchProducts = async () => {
-
-      const res = await fetch("http://localhost:5000/api/products");
-      const data = await res.json();
-
-      setProducts(data);
-
-    };
-
-    const fetchWarehouses = async () => {
-
-      const res = await fetch("http://localhost:5000/api/warehouses");
-      const data = await res.json();
-
-      setWarehouses(data);
-
-    };
-
-    fetchProducts();
-    fetchWarehouses();
+    fetch("http://localhost:5000/api/warehouses")
+      .then(res => res.json())
+      .then(data => setWarehouses(data));
 
   }, []);
+
+  const loadWarehouseProducts = async (id) => {
+
+    setWarehouseId(id);
+
+    if (!id) return;
+
+    const res = await fetch(
+      `http://localhost:5000/api/product-warehouse-stock/warehouse/${id}`
+    );
+
+    const data = await res.json();
+
+    setProducts(data);
+
+  };
 
   const handleChange = (index, field, value) => {
 
@@ -45,17 +45,16 @@ const NewSales = () => {
 
     if (field === "productId") {
 
-      const selectedProduct = products.find(p => p._id === value);
+      const product = products.find(
+        p => p.productId._id === value
+      );
 
       updated[index].productId = value;
-      updated[index].price = selectedProduct?.sellingPrice || 0;
+      updated[index].price = product?.productId?.sellingPrice || 0;
 
     } else {
 
-      updated[index][field] =
-        field === "price" || field === "quantity"
-          ? Number(value)
-          : value;
+      updated[index][field] = Number(value);
 
     }
 
@@ -67,7 +66,7 @@ const NewSales = () => {
 
     setRows([
       ...rows,
-      { productId: "", warehouseId: "", price: 0, quantity: 1 }
+      { productId: "", price: 0, quantity: 1 }
     ]);
 
   };
@@ -85,68 +84,51 @@ const NewSales = () => {
 
     e.preventDefault();
 
-    try {
-
-      const saleResponse = await fetch(
-        "http://localhost:5000/api/sales",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            CustomerName: customerName,
-            TotalAmount: grandTotal,
-            PaymentMethod: "Cash"
-          })
-        }
-      );
-
-      const saleData = await saleResponse.json();
-
-      if (!saleResponse.ok) {
-
-        alert(saleData.message);
-        return;
-
+    const saleRes = await fetch(
+      "http://localhost:5000/api/sales",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          CustomerName: customerName,
+          TotalAmount: grandTotal,
+          PaymentMethod: "Cash"
+        })
       }
+    );
 
-      const saleId = saleData.sale._id;
+    const saleData = await saleRes.json();
+    const saleId = saleData.sale._id;
 
-      for (const row of rows) {
+    for (const row of rows) {
 
-        await fetch("http://localhost:5000/api/sale-items", {
+      await fetch("http://localhost:5000/api/sale-items", {
 
-          method: "POST",
+        method: "POST",
 
-          headers: {
-            "Content-Type": "application/json"
-          },
+        headers: {
+          "Content-Type": "application/json"
+        },
 
-          body: JSON.stringify({
+        body: JSON.stringify({
 
-            SaleId: saleId,
-            ProductId: row.productId,
-            WarehouseId: row.warehouseId,
-            Quantity: row.quantity,
-            UnitPrice: row.price
+          SaleId: saleId,
+          ProductId: row.productId,
+          WarehouseId: warehouseId,
+          Quantity: row.quantity,
+          UnitPrice: row.price
 
-          })
+        })
 
-        });
-
-      }
-
-      alert("Sale Created Successfully");
-
-      navigate("/sales");
-
-    } catch (error) {
-
-      console.error(error);
-      alert("Server Error");
+      });
 
     }
+
+    alert("Sale Created Successfully");
+
+    navigate("/sales");
 
   };
 
@@ -154,43 +136,59 @@ const NewSales = () => {
 
     <div className="card shadow-sm p-4">
 
-      <h4 className="mb-4">New Sales</h4>
+      <h4 className="mb-4">New Sale</h4>
 
       <form onSubmit={handleSubmit}>
 
-        <div className="row mb-4">
+        <div className="mb-3">
 
-          <div className="col-md-6">
+          <label className="form-label">Warehouse</label>
 
-            <label className="form-label">Customer</label>
+          <select
+            className="form-select"
+            value={warehouseId}
+            onChange={(e) =>
+              loadWarehouseProducts(e.target.value)
+            }
+            required
+          >
 
-            <input
-              type="text"
-              className="form-control"
-              value={customerName}
-              onChange={(e) => setCustomerName(e.target.value)}
-              required
-            />
+            <option value="">Select Warehouse</option>
 
-          </div>
+            {warehouses.map((w) => (
 
-          <div className="col-md-6">
+              <option key={w._id} value={w._id}>
+                {w.name}
+              </option>
 
-            <label className="form-label">Date</label>
+            ))}
 
-            <input type="date" className="form-control" />
-
-          </div>
+          </select>
 
         </div>
 
-        <table className="table table-bordered align-middle">
+        <div className="mb-4">
+
+          <label className="form-label">Customer</label>
+
+          <input
+            type="text"
+            className="form-control"
+            value={customerName}
+            onChange={(e) =>
+              setCustomerName(e.target.value)
+            }
+            required
+          />
+
+        </div>
+
+        <table className="table table-bordered">
 
           <thead className="table-light">
 
             <tr>
               <th>Product</th>
-              <th>Warehouse</th>
               <th>Price</th>
               <th>Quantity</th>
               <th>Total</th>
@@ -210,17 +208,24 @@ const NewSales = () => {
                     className="form-select"
                     value={row.productId}
                     onChange={(e) =>
-                      handleChange(index, "productId", e.target.value)
+                      handleChange(
+                        index,
+                        "productId",
+                        e.target.value
+                      )
                     }
                     required
                   >
 
                     <option value="">Select Product</option>
 
-                    {products.map(p => (
+                    {products.map((p) => (
 
-                      <option key={p._id} value={p._id}>
-                        {p.name}
+                      <option
+                        key={p.productId._id}
+                        value={p.productId._id}
+                      >
+                        {p.productId.name}
                       </option>
 
                     ))}
@@ -229,43 +234,7 @@ const NewSales = () => {
 
                 </td>
 
-                <td>
-
-                  <select
-                    className="form-select"
-                    value={row.warehouseId}
-                    onChange={(e) =>
-                      handleChange(index, "warehouseId", e.target.value)
-                    }
-                    required
-                  >
-
-                    <option value="">Select Warehouse</option>
-
-                    {warehouses.map(w => (
-
-                      <option key={w._id} value={w._id}>
-                        {w.name}
-                      </option>
-
-                    ))}
-
-                  </select>
-
-                </td>
-
-                <td>
-
-                  <input
-                    type="number"
-                    className="form-control"
-                    value={row.price}
-                    onChange={(e) =>
-                      handleChange(index, "price", e.target.value)
-                    }
-                  />
-
-                </td>
+                <td>₹{row.price}</td>
 
                 <td>
 
@@ -274,7 +243,11 @@ const NewSales = () => {
                     className="form-control"
                     value={row.quantity}
                     onChange={(e) =>
-                      handleChange(index, "quantity", e.target.value)
+                      handleChange(
+                        index,
+                        "quantity",
+                        e.target.value
+                      )
                     }
                   />
 
@@ -298,49 +271,16 @@ const NewSales = () => {
           Add Row
         </button>
 
-        <div className="row justify-content-end">
-
-          <div className="col-md-4">
-
-            <table className="table">
-
-              <tbody>
-
-                <tr>
-                  <th>Subtotal:</th>
-                  <td>₹{subtotal.toFixed(2)}</td>
-                </tr>
-
-                <tr>
-                  <th>CGST (9%):</th>
-                  <td>₹{cgst.toFixed(2)}</td>
-                </tr>
-
-                <tr>
-                  <th>SGST (9%):</th>
-                  <td>₹{sgst.toFixed(2)}</td>
-                </tr>
-
-                <tr className="fw-bold">
-                  <th>Grand Total:</th>
-                  <td>₹{grandTotal.toFixed(2)}</td>
-                </tr>
-
-              </tbody>
-
-            </table>
-
-          </div>
-
-        </div>
-
         <div className="text-end">
+
+          <h5>Grand Total: ₹{grandTotal.toFixed(2)}</h5>
 
           <button
             type="submit"
-            className="btn"
+            className="btn mt-3"
             style={{
-              background: "linear-gradient(135deg, #059669, #047857)",
+              background:
+                "linear-gradient(135deg, #059669, #047857)",
               color: "#fff",
               padding: "8px 25px",
               borderRadius: "8px"

@@ -1,12 +1,24 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
+
+  const navigate = useNavigate();
+
   const linkClass = ({ isActive }) =>
     isActive
       ? "nav-link rounded mb-2 px-3 py-2 bg-primary text-white"
       : "nav-link text-light rounded mb-2 px-3 py-2";
 
+  const handleLogout = () => {
+
+    localStorage.removeItem("token");
+
+    navigate("/login");
+
+  };
+
   return (
+
     <div
       style={{
         width: "250px",
@@ -16,6 +28,7 @@ const Sidebar = () => {
       }}
       className="d-flex flex-column"
     >
+
       <div className="p-4 fs-5 fw-bold border-bottom">
         SteelInventory
       </div>
@@ -57,14 +70,21 @@ const Sidebar = () => {
           Sales
         </NavLink>
 
-        <NavLink to="login" className="nav-link text-light rounded mb-2 px-3 py-2">
+        <button
+          onClick={handleLogout}
+          className="nav-link text-light rounded mb-2 px-3 py-2 border-0 bg-transparent text-start"
+          style={{ cursor: "pointer" }}
+        >
           <i className="fa-solid fa-right-from-bracket me-2"></i>
           Logout
-        </NavLink>
+        </button>
 
       </nav>
+
     </div>
+
   );
+
 };
 
 export default Sidebar;

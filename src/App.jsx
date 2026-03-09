@@ -1,9 +1,10 @@
 import { Routes, Route } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 
-/* Auth Pages */
+/* Auth */
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import ProtectedRoute from "./pages/auth/ProtectedRoute";
 
 /* Dashboard */
 import Dashboard from "./pages/dashboard/Dashboard";
@@ -30,20 +31,26 @@ import Sales from "./pages/sales/Sales";
 import NewSales from "./pages/sales/NewSales";
 import SalesDetails from "./pages/sales/SalesDetails";
 
-/* Stock Adj */ 
+/* Stock */
 import StockAdjustment from "./pages/stock/StockAdjustment";
-
 
 function App() {
   return (
     <Routes>
 
-      {/* Public */}
+      {/* Public Routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      {/* Layout */}
-      <Route path="/" element={<Layout />}>
+      {/* Protected Routes */}
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <Layout />
+          </ProtectedRoute>
+        }
+      >
 
         <Route index element={<Dashboard />} />
         <Route path="dashboard" element={<Dashboard />} />
@@ -55,7 +62,8 @@ function App() {
         <Route path="warehouse/add" element={<AddWarehouse />} />
         <Route path="warehouse/:id" element={<WarehouseProducts />} />
         <Route path="warehouse/:id/add-product" element={<AddWarehouseProduct />} />
-        <Route path="/warehouse/:warehouseId/product/:stockId" element={<EditWarehouseProduct />} />
+        <Route path="warehouse/:warehouseId/product/:stockId" element={<EditWarehouseProduct />} />
+
         <Route path="low-stock" element={<WarehouseLowStock />} />
 
         <Route path="quotation" element={<Quotations />} />
@@ -66,7 +74,7 @@ function App() {
         <Route path="sales/add" element={<NewSales />} />
         <Route path="sales/:id" element={<SalesDetails />} />
 
-        <Route path="stock_adj" element={<StockAdjustment/>}/>
+        <Route path="stock_adj" element={<StockAdjustment />} />
 
       </Route>
 
