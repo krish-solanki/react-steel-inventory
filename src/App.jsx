@@ -63,7 +63,6 @@ function App() {
         <Route path="warehouse/:id" element={<WarehouseProducts />} />
         <Route path="warehouse/:id/add-product" element={<AddWarehouseProduct />} />
         <Route path="warehouse/:warehouseId/product/:stockId" element={<EditWarehouseProduct />} />
-
         <Route path="low-stock" element={<WarehouseLowStock />} />
 
         <Route path="quotation" element={<Quotations />} />

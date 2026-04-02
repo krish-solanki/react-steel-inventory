@@ -12,9 +12,7 @@ const Login = () => {
   });
 
   useEffect(() => {
-
     const token = localStorage.getItem("token");
-
     if (token) {
       navigate("/dashboard");
     }
@@ -22,20 +20,15 @@ const Login = () => {
   }, []);
 
   const handleChange = (e) => {
-
     setForm({
       ...form,
       [e.target.name]: e.target.value
     });
-
   };
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
-
     try {
-
       const response = await axios.post(
         "http://localhost:5000/api/login",
         {
@@ -45,11 +38,8 @@ const Login = () => {
       );
 
       const token = response.data.token;
-
       localStorage.setItem("token", token);
-
       alert("Login Successful");
-
       navigate("/dashboard");
 
     } catch (error) {
