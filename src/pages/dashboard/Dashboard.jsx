@@ -1,16 +1,5 @@
 import { useEffect, useState } from "react";
 import StatCard from "../../components/common/StatCard";
-import {
-  Chart as ChartJS,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  Tooltip,
-  Legend,
-} from "chart.js";
-import { Bar } from "react-chartjs-2";
-
-ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const Dashboard = () => {
 
@@ -21,7 +10,6 @@ const Dashboard = () => {
   useEffect(() => {
 
     const fetchCounts = async () => {
-
       try {
 
         const productsRes = await fetch("http://localhost:5000/api/products");
@@ -37,31 +25,18 @@ const Dashboard = () => {
         setQuotationCount(quotations.length);
 
       } catch (error) {
-
         console.error("Dashboard fetch error:", error);
-
       }
-
     };
 
     fetchCounts();
 
   }, []);
 
-  const data = {
-    labels: ["Mar", "Apr", "May", "Jun", "Jul", "Aug"],
-    datasets: [
-      {
-        label: "Sales",
-        data: [80000, 50000, 120000, 100000, 115000, 150000],
-        backgroundColor: "#3b82f6",
-      },
-    ],
-  };
-
   return (
-    <div>
+    <div className="container-fluid">
 
+      {/* Top Stats */}
       <div className="row mb-4">
 
         <StatCard
@@ -87,42 +62,32 @@ const Dashboard = () => {
 
       </div>
 
+      {/* Bottom Section */}
       <div className="row">
 
-        <div className="col-md-8">
+        {/* Low Stock Table Full Width */}
+        <div className="col-md-12">
 
           <div className="card shadow-sm p-3">
 
-            <h5>Monthly Sales</h5>
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h5 className="mb-0">Low Stock Alerts</h5>
+            </div>
 
-            <Bar data={data} />
+            <table className="table table-hover align-middle">
 
-          </div>
-
-        </div>
-
-        <div className="col-md-4">
-
-          <div className="card shadow-sm p-3">
-
-            <h5>Low Stock Alerts</h5>
-
-            <table className="table">
-
-              <thead>
-
+              <thead className="table-light">
                 <tr>
-                  <th>SKU</th>
-                  <th>Current</th>
+                  <th>Product</th>
+                  <th>Current Stock</th>
                   <th>Status</th>
                 </tr>
-
               </thead>
 
               <tbody>
 
                 <tr>
-                  <td>990C2ie</td>
+                  <td>Steel Chair</td>
                   <td>5</td>
                   <td>
                     <span className="badge bg-danger">Low</span>
@@ -136,6 +101,14 @@ const Dashboard = () => {
                     <span className="badge bg-warning text-dark">
                       Critical
                     </span>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>Office Table</td>
+                  <td>8</td>
+                  <td>
+                    <span className="badge bg-danger">Low</span>
                   </td>
                 </tr>
 

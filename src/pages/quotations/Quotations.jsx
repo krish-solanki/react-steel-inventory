@@ -6,7 +6,6 @@ const Quotations = () => {
   const navigate = useNavigate();
 
   const [quotations, setQuotations] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -14,11 +13,8 @@ const Quotations = () => {
       try {
         const res = await axios.get("http://localhost:5000/api/quotations");
         setQuotations(res.data);
-      } catch (err) {
-        console.error(err);
-        setError(err.response?.data?.message || "Failed to load quotations");
-      } finally {
-        setLoading(false);
+      } catch {
+        setError("Failed to load quotations");
       }
     };
 
@@ -51,10 +47,9 @@ const Quotations = () => {
         </button>
       </div>
 
-      {loading && <p>Loading quotations...</p>}
       {error && <p className="text-danger">{error}</p>}
 
-      {!loading && !error && (
+      {!error && (
         <table className="table table-hover">
           <thead className="table-light">
             <tr>
@@ -69,7 +64,7 @@ const Quotations = () => {
             {quotations.length === 0 ? (
               <tr>
                 <td colSpan="4" className="text-center">
-                  No quotations found
+                  Quotations not found
                 </td>
               </tr>
             ) : (

@@ -17,7 +17,7 @@ const AddProduct = () => {
   });
 
   const [error, setError] = useState("");
-
+  
   const handleChange = (e) => {
     setForm({
       ...form,

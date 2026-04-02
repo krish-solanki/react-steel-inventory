@@ -7,7 +7,6 @@ const NewSales = () => {
 
   const [customerName, setCustomerName] = useState("");
   const [warehouseId, setWarehouseId] = useState("");
-
   const [warehouses, setWarehouses] = useState([]);
   const [products, setProducts] = useState([]);
 
@@ -16,17 +15,14 @@ const NewSales = () => {
   ]);
 
   useEffect(() => {
-
     fetch("http://localhost:5000/api/warehouses")
       .then(res => res.json())
       .then(data => setWarehouses(data));
-
   }, []);
 
   const loadWarehouseProducts = async (id) => {
 
     setWarehouseId(id);
-
     if (!id) return;
 
     const res = await fetch(
@@ -34,9 +30,7 @@ const NewSales = () => {
     );
 
     const data = await res.json();
-
     setProducts(data);
-
   };
 
   const handleChange = (index, field, value) => {
@@ -53,22 +47,14 @@ const NewSales = () => {
       updated[index].price = product?.productId?.sellingPrice || 0;
 
     } else {
-
       updated[index][field] = Number(value);
-
     }
 
     setRows(updated);
-
   };
 
   const addRow = () => {
-
-    setRows([
-      ...rows,
-      { productId: "", price: 0, quantity: 1 }
-    ]);
-
+    setRows([...rows, { productId: "", price: 0, quantity: 1 }]);
   };
 
   const subtotal = rows.reduce(
@@ -105,31 +91,22 @@ const NewSales = () => {
     for (const row of rows) {
 
       await fetch("http://localhost:5000/api/sale-items", {
-
         method: "POST",
-
         headers: {
           "Content-Type": "application/json"
         },
-
         body: JSON.stringify({
-
           SaleId: saleId,
           ProductId: row.productId,
           WarehouseId: warehouseId,
           Quantity: row.quantity,
           UnitPrice: row.price
-
         })
-
-      });
-
+      }); 
     }
 
     alert("Sale Created Successfully");
-
     navigate("/sales");
-
   };
 
   return (
@@ -141,7 +118,6 @@ const NewSales = () => {
       <form onSubmit={handleSubmit}>
 
         <div className="mb-3">
-
           <label className="form-label">Warehouse</label>
 
           <select
@@ -152,23 +128,18 @@ const NewSales = () => {
             }
             required
           >
-
             <option value="">Select Warehouse</option>
 
             {warehouses.map((w) => (
-
               <option key={w._id} value={w._id}>
                 {w.name}
               </option>
-
             ))}
 
           </select>
-
         </div>
 
         <div className="mb-4">
-
           <label className="form-label">Customer</label>
 
           <input
@@ -180,20 +151,17 @@ const NewSales = () => {
             }
             required
           />
-
         </div>
 
         <table className="table table-bordered">
 
           <thead className="table-light">
-
             <tr>
               <th>Product</th>
               <th>Price</th>
               <th>Quantity</th>
               <th>Total</th>
             </tr>
-
           </thead>
 
           <tbody>
@@ -203,54 +171,39 @@ const NewSales = () => {
               <tr key={index}>
 
                 <td>
-
                   <select
                     className="form-select"
                     value={row.productId}
                     onChange={(e) =>
-                      handleChange(
-                        index,
-                        "productId",
-                        e.target.value
-                      )
+                      handleChange(index, "productId", e.target.value)
                     }
                     required
                   >
-
                     <option value="">Select Product</option>
 
                     {products.map((p) => (
-
                       <option
                         key={p.productId._id}
                         value={p.productId._id}
                       >
                         {p.productId.name}
                       </option>
-
                     ))}
 
                   </select>
-
                 </td>
 
                 <td>₹{row.price}</td>
 
                 <td>
-
                   <input
                     type="number"
                     className="form-control"
                     value={row.quantity}
                     onChange={(e) =>
-                      handleChange(
-                        index,
-                        "quantity",
-                        e.target.value
-                      )
+                      handleChange(index, "quantity", e.target.value)
                     }
                   />
-
                 </td>
 
                 <td>₹{row.price * row.quantity}</td>
@@ -279,8 +232,7 @@ const NewSales = () => {
             type="submit"
             className="btn mt-3"
             style={{
-              background:
-                "linear-gradient(135deg, #059669, #047857)",
+              background: "linear-gradient(135deg, #059669, #047857)",
               color: "#fff",
               padding: "8px 25px",
               borderRadius: "8px"

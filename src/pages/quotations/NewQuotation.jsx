@@ -7,7 +7,6 @@ const NewQuotation = () => {
 
   const [customerName, setCustomerName] = useState("");
   const [quotationDate, setQuotationDate] = useState("");
-
   const [products, setProducts] = useState([]);
 
   const [rows, setRows] = useState([
@@ -15,15 +14,14 @@ const NewQuotation = () => {
   ]);
 
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const res = await axios.get("http://localhost:5000/api/products");
         setProducts(res.data);
-      } catch (err) {
-        console.error("Failed to load products", err);
+      } catch {
+        setError('Quatation Not Added')
       }
     };
 
@@ -35,7 +33,6 @@ const NewQuotation = () => {
 
     if (field === "productId") {
       const selectedProduct = products.find(p => p._id === value);
-
       updated[index].productId = value;
       updated[index].price = selectedProduct?.sellingPrice || 0;
     } else {
@@ -60,10 +57,9 @@ const NewQuotation = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setError("");
 
     try {
-
       const quotationRes = await axios.post(
         "http://localhost:5000/api/quotations",
         {
@@ -88,14 +84,10 @@ const NewQuotation = () => {
       await Promise.all(itemRequests);
 
       alert("Quotation saved successfully");
-
       navigate("/quotations");
 
-    } catch (err) {
-      console.error(err);
+    } catch {
       setError("Failed to save quotation");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -143,7 +135,6 @@ const NewQuotation = () => {
           <tbody>
             {rows.map((row, index) => (
               <tr key={index}>
-
                 <td>
                   <select
                     className="form-select"
@@ -186,7 +177,6 @@ const NewQuotation = () => {
                 </td>
 
                 <td>₹{row.price * row.quantity}</td>
-
               </tr>
             ))}
           </tbody>
@@ -232,7 +222,6 @@ const NewQuotation = () => {
           <button
             type="submit"
             className="btn"
-            disabled={loading}
             style={{
               background: "linear-gradient(135deg, #059669, #047857)",
               color: "#fff",
@@ -240,7 +229,7 @@ const NewQuotation = () => {
               borderRadius: "8px"
             }}
           >
-            {loading ? "Saving..." : "Save Quotation"}
+            Save Quotation
           </button>
         </div>
 

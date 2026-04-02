@@ -18,3 +18,5 @@ const StatCard = ({ title, value, bg, icon }) => {
 };
 
 export default StatCard;
+//  routing 
+//  gloable 
