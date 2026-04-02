@@ -3,12 +3,11 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 const EditWarehouseProduct = () => {
-  
+
   const { warehouseId, stockId } = useParams();
   const navigate = useNavigate();
 
   const user = JSON.parse(localStorage.getItem("user"));
-  
 
   const [currentStock, setCurrentStock] = useState(0);
   const [changeQty, setChangeQty] = useState("");
@@ -27,10 +26,14 @@ const EditWarehouseProduct = () => {
           `http://localhost:5000/api/product-warehouse-stock/${stockId}`
         );
 
-        setCurrentStock(Number(res.data.quantity));
-        setProductName(res.data.productId?.name);
-        setProductId(res.data.productId?._id);
-      } catch {
+        console.log("STOCK DATA:", res.data);
+
+        setCurrentStock(res.data.quantity || 0);
+        setProductName(res.data.productId?.name || "");
+        setProductId(res.data.productId?._id || "");
+
+      } catch (err) {
+        console.log(err?.response?.data || err.message);
         setError("Failed to load product details");
       }
     };

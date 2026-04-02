@@ -3,29 +3,38 @@ import axios from "axios";
 
 const StockAdjustment = () => {
   const [adjustments, setAdjustments] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const fetchAdjustments = async () => {
-      try {
-        const res = await axios.get(
-          "http://localhost:5000/api/stock-adjustments"
-        );
-        setAdjustments(res.data);
-      } catch (err) {
-        console.error(err);
-        setError("Failed to load stock adjustments");
-      } finally {
-        setLoading(false);
-      }
-    };
+useEffect(() => {
 
-    fetchAdjustments();
-  }, []);
+  const loadData = async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:5000/api/stock-adjustments"
+      );
+      setAdjustments(res.data);
+    } catch {
+      setError("Failed to load stock adjustments");
+    }
+  };
+
+  loadData();
+
+  const interval = setInterval(loadData, 5000);
+
+  return () => clearInterval(interval);
+
+}, []);
 
   const formatDate = (date) => {
-    return new Date(date).toLocaleString("en-GB");
+    return new Date(date).toLocaleString("en-IN");
+  };
+
+  const getStatus = (type) => {
+    if (type === "OUT") {
+      return { label: "Decrease", class: "bg-danger" };
+    }
+    return { label: "Increase", class: "bg-success" };
   };
 
   return (
@@ -41,10 +50,9 @@ const StockAdjustment = () => {
           </p>
         </div>
 
-        {loading && <p>Loading adjustments...</p>}
         {error && <p className="text-danger">{error}</p>}
 
-        {!loading && !error && (
+        {!error && (
           <div className="table-responsive">
             <table className="table table-hover align-middle">
               <thead className="table-light">
@@ -55,49 +63,38 @@ const StockAdjustment = () => {
                   <th>Type</th>
                   <th>Qty</th>
                   <th>Reason</th>
-                  <th>Remarks</th>
                   <th>Adjusted By</th>
                 </tr>
               </thead>
 
               <tbody>
-                {adjustments.length === 0 ? (
-                  <tr>
-                    <td colSpan="8" className="text-center">
-                      No stock adjustments found
-                    </td>
-                  </tr>
-                ) : (
-                  adjustments.map((item) => (
+                {adjustments.map((item) => {
+                  const status = getStatus(item.adjustmentType);
+
+                  return (
                     <tr key={item._id}>
                       <td>{formatDate(item.adjustedAt)}</td>
                       <td>{item.productId?.name}</td>
                       <td>{item.warehouseId?.name}</td>
 
                       <td>
-                        <span
-                          className={`badge ${
-                            item.adjustmentType === "Decrease"
-                              ? "bg-danger"
-                              : "bg-success"
-                          }`}
-                        >
-                          {item.adjustmentType}
+                        <span className={`badge ${status.class}`}>
+                          {status.label}
                         </span>
                       </td>
 
                       <td>{item.quantity}</td>
                       <td>{item.reason}</td>
-                      <td>{item.remarks || "-"}</td>
                       <td>{item.adjustedBy?.name}</td>
                     </tr>
-                  ))
-                )}
+                  );
+                })}
               </tbody>
 
             </table>
           </div>
         )}
+
       </div>
     </div>
   );

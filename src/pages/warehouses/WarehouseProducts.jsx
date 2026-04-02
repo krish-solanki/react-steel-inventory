@@ -12,11 +12,17 @@ const WarehouseProducts = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        console.log("Warehouse ID:", id);
+
         const res = await axios.get(
           `http://localhost:5000/api/product-warehouse-stock/warehouse/${id}`
         );
+
+        console.log("DATA:", res.data);
+
         setProducts(res.data);
-      } catch {
+      } catch (err) {
+        console.log("ERROR:", err?.response?.data || err.message);
         setError("Failed to load products");
       }
     };
@@ -52,31 +58,23 @@ const WarehouseProducts = () => {
           </thead>
 
           <tbody>
-            {products.length === 0 ? (
-              <tr>
-                <td colSpan="4" className="text-center">
-                  Products not found
+            {products.map((item) => (
+              <tr key={item._id}>
+                <td>{item.productId?.name}</td>
+                <td>{item.quantity}</td>
+                <td>₹{item.productId?.sellingPrice}</td>
+                <td>
+                  <button
+                    className="btn btn-sm btn-primary"
+                    onClick={() =>
+                      navigate(`/warehouse/${id}/product/${item._id}`)
+                    }
+                  >
+                    Edit
+                  </button>
                 </td>
               </tr>
-            ) : (
-              products.map((item) => (
-                <tr key={item._id}>
-                  <td>{item.productId?.name}</td>
-                  <td>{item.quantity}</td>
-                  <td>₹{item.productId?.sellingPrice}</td>
-                  <td>
-                    <button
-                      className="btn btn-sm btn-primary"
-                      onClick={() =>
-                        navigate(`/warehouse/${id}/product/${item._id}`)
-                      }
-                    >
-                      Edit
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
+            ))}
           </tbody>
 
         </table>
