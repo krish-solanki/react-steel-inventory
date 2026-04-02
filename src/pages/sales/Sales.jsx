@@ -4,20 +4,14 @@ import { useNavigate } from "react-router-dom";
 const Sales = () => {
 
   const navigate = useNavigate();
-
   const [salesData, setSalesData] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-
     fetch("http://localhost:5000/api/sales")
       .then((res) => res.json())
       .then((data) => {
         setSalesData(data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-
+      });
   }, []);
 
   return (
@@ -44,7 +38,6 @@ const Sales = () => {
         <table className="table table-hover align-middle">
 
           <thead className="table-light">
-
             <tr>
               <th>ID</th>
               <th>Customer</th>
@@ -52,63 +45,42 @@ const Sales = () => {
               <th className="text-end">Total</th>
               <th className="text-center">Action</th>
             </tr>
-
           </thead>
 
           <tbody>
 
-            {loading ? (
+            {salesData.map((sale) => (
 
-              <tr>
-                <td colSpan="5" className="text-center">
-                  Loading...
+              <tr key={sale._id}>
+
+                <td>#{sale._id.slice(-5)}</td>
+
+                <td>{sale.CustomerName}</td>
+
+                <td>
+                  {new Date(sale.SaleDate).toLocaleString("en-IN")}
                 </td>
+
+                <td className="text-end fw-semibold">
+                  ₹ {sale.TotalAmount.toLocaleString("en-IN", {
+                    minimumFractionDigits: 2
+                  })}
+                </td>
+
+                <td className="text-center">
+
+                  <button
+                    className="btn btn-sm btn-outline-primary"
+                    onClick={() => navigate(`/sales/${sale._id}`)}
+                  >
+                    View
+                  </button>
+
+                </td>
+
               </tr>
 
-            ) : salesData.length === 0 ? (
-
-              <tr>
-                <td colSpan="5" className="text-center">
-                  No Sales Found
-                </td>
-              </tr>
-
-            ) : (
-
-              salesData.map((sale) => (
-
-                <tr key={sale._id}>
-
-                  <td>#{sale._id.slice(-5)}</td>
-
-                  <td>{sale.CustomerName}</td>
-
-                  <td>
-                    {new Date(sale.SaleDate).toLocaleString("en-IN")}
-                  </td>
-
-                  <td className="text-end fw-semibold">
-                    ₹ {sale.TotalAmount.toLocaleString("en-IN", {
-                      minimumFractionDigits: 2
-                    })}
-                  </td>
-
-                  <td className="text-center">
-
-                    <button
-                      className="btn btn-sm btn-outline-primary"
-                      onClick={() => navigate(`/sales/${sale._id}`)}
-                    >
-                      View
-                    </button>
-
-                  </td>
-
-                </tr>
-
-              ))
-
-            )}
+            ))}
 
           </tbody>
 

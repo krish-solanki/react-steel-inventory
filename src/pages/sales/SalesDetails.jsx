@@ -7,45 +7,24 @@ const SalesDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [sale, setSale] = useState(null);
+  const [sale, setSale] = useState({});
   const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
 
     const fetchData = async () => {
 
-      try {
+      const saleRes = await axios.get(`http://localhost:5000/api/sales/${id}`);
+      const itemsRes = await axios.get(`http://localhost:5000/api/sale-items/sale/${id}`);
 
-        const saleRes = await axios.get(`http://localhost:5000/api/sales/${id}`);
-        const itemsRes = await axios.get(`http://localhost:5000/api/sale-items/sale/${id}`);
-
-        setSale(saleRes.data);
-        setItems(itemsRes.data);
-
-      } catch (err) {
-
-        console.error("Failed to load sale details", err);
-
-      } finally {
-
-        setLoading(false);
-
-      }
+      setSale(saleRes.data);
+      setItems(itemsRes.data);
 
     };
 
     fetchData();
 
   }, [id]);
-
-  if (loading) {
-    return <p>Loading...</p>;
-  }
-
-  if (!sale) {
-    return <p>Sale not found</p>;
-  }
 
   const subtotal = items.reduce(
     (sum, item) => sum + item.UnitPrice * item.Quantity,
