@@ -14,8 +14,8 @@ const Warehouses = () => {
       try {
         const res = await axios.get("http://localhost:5000/api/warehouses");
         setWarehouses(res.data);
-      } catch (err) {
-        setError(err.response?.data?.message || "Failed to load warehouses");
+      } catch {
+        setError("Failed to load warehouses");
       } finally {
         setLoading(false);
       }
@@ -34,7 +34,6 @@ const Warehouses = () => {
         </Link>
       </div>
 
-      {loading && <p className="mt-3">Loading warehouses...</p>}
       {error && <p className="text-danger mt-3">{error}</p>}
 
       {!loading && !error && (

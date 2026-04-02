@@ -47,9 +47,8 @@ const handleSubmit = async (e) => {
     alert("Warehouse added successfully");
     navigate("/warehouse");
 
-  } catch (err) {
-    console.log(err);
-    setError(err.response?.data?.message || "Server error");
+  } catch{
+    setError("Server error");
   } finally {
     setLoading(false);
   }

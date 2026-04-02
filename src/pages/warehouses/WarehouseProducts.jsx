@@ -7,7 +7,6 @@ const WarehouseProducts = () => {
   const navigate = useNavigate();
 
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -17,10 +16,8 @@ const WarehouseProducts = () => {
           `http://localhost:5000/api/product-warehouse-stock/warehouse/${id}`
         );
         setProducts(res.data);
-      } catch (err) {
-        setError(err.response?.data?.message || "Failed to load products");
-      } finally {
-        setLoading(false);
+      } catch {
+        setError("Failed to load products");
       }
     };
 
@@ -28,26 +25,24 @@ const WarehouseProducts = () => {
   }, [id]);
 
   return (
-    <div className="card shadow-sm p-4">
+    <div className="card p-4">
 
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h4 className="mb-0">Warehouse Products</h4>
+      <div className="d-flex justify-content-between mb-4">
+        <h4>Warehouse Products</h4>
 
         <button
-          className="btn btn-primary px-4"
+          className="btn btn-primary"
           onClick={() => navigate(`/warehouse/${id}/add-product`)}
         >
-          <i className="fa fa-plus me-2"></i>
           Add Product
         </button>
       </div>
 
-      {loading && <p>Loading products...</p>}
       {error && <p className="text-danger">{error}</p>}
 
-      {!loading && !error && (
+      {!error && (
         <table className="table">
-          <thead className="table-light">
+          <thead>
             <tr>
               <th>Name</th>
               <th>Stock</th>
@@ -55,11 +50,12 @@ const WarehouseProducts = () => {
               <th>Action</th>
             </tr>
           </thead>
+
           <tbody>
             {products.length === 0 ? (
               <tr>
                 <td colSpan="4" className="text-center">
-                  No Products Found
+                  Products not found
                 </td>
               </tr>
             ) : (
@@ -82,19 +78,9 @@ const WarehouseProducts = () => {
               ))
             )}
           </tbody>
+
         </table>
       )}
-
-      <div className="d-flex justify-content-end mt-4">
-        <button
-          className="btn btn-outline-secondary px-4"
-          onClick={() => navigate("/warehouse")}
-        >
-          <i className="fa fa-arrow-left me-2"></i>
-          Back
-        </button>
-      </div>
-
     </div>
   );
 };
