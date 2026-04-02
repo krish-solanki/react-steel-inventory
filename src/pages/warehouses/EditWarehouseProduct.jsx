@@ -12,7 +12,7 @@ const EditWarehouseProduct = () => {
   const [currentStock, setCurrentStock] = useState(0);
   const [changeQty, setChangeQty] = useState("");
   const [type, setType] = useState("increase");
-  const [reason, setReason] = useState("purchase");
+  const [reason, setReason] = useState("");
 
   const [productName, setProductName] = useState("");
   const [productId, setProductId] = useState("");
@@ -26,14 +26,11 @@ const EditWarehouseProduct = () => {
           `http://localhost:5000/api/product-warehouse-stock/${stockId}`
         );
 
-        console.log("STOCK DATA:", res.data);
-
         setCurrentStock(res.data.quantity || 0);
         setProductName(res.data.productId?.name || "");
         setProductId(res.data.productId?._id || "");
 
-      } catch (err) {
-        console.log(err?.response?.data || err.message);
+      } catch {
         setError("Failed to load product details");
       }
     };
@@ -41,12 +38,22 @@ const EditWarehouseProduct = () => {
     fetchStock();
   }, [stockId]);
 
+  const formatReason = (value) => {
+    if (!value) return "";
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
     if (!user || !user._id) {
       setError("User not found. Please login again.");
+      return;
+    }
+
+    if (!reason) {
+      setError("Please select reason");
       return;
     }
 
@@ -73,7 +80,7 @@ const EditWarehouseProduct = () => {
           warehouseId,
           adjustmentType: type === "increase" ? "IN" : "OUT",
           quantity: Number(changeQty),
-          reason,
+          reason: formatReason(reason),
           remarks: "",
           adjustedBy: user._id
         }
@@ -82,81 +89,61 @@ const EditWarehouseProduct = () => {
       alert(`Stock updated by ${user.fullName}`);
       navigate(`/warehouse/${warehouseId}`);
 
-    } catch (err) {
-      console.log(err?.response?.data || err.message);
+    } catch {
       setError("Failed to update stock");
     }
   };
 
   return (
-    <div className="card shadow-sm border-0 p-4">
+    <div className="card p-4">
 
-      <div className="d-flex justify-content-between mb-4">
-        <h4>Edit Stock</h4>
+      <h4 className="mb-4">
+        Edit Stock (User: {user?.fullName})
+      </h4>
 
-        <div>
-          <span className="me-3 text-muted">
-            Logged in as: <strong>{user?.fullName}</strong>
-          </span>
-
-          <button
-            className="btn btn-outline-secondary"
-            onClick={() => navigate(`/warehouse/${warehouseId}`)}
-          >
-            Back
-          </button>
-        </div>
-      </div>
-
-      {error && <div className="alert alert-danger">{error}</div>}
+      {error && <p className="text-danger">{error}</p>}
 
       <form onSubmit={handleSubmit}>
 
-        <div className="mb-3">
-          <label>Product Name</label>
-          <input className="form-control" value={productName} disabled />
-        </div>
+        <input
+          className="form-control mb-3"
+          value={productName}
+          disabled
+        />
 
-        <div className="mb-3">
-          <label>Current Stock</label>
-          <input className="form-control" value={currentStock} disabled />
-        </div>
+        <input
+          className="form-control mb-3"
+          value={currentStock}
+          disabled
+        />
 
-        <div className="mb-3">
-          <label>Action</label>
-          <select
-            className="form-select"
-            value={type}
-            onChange={(e) => setType(e.target.value)}
-          >
-            <option value="increase">Increase</option>
-            <option value="decrease">Decrease</option>
-          </select>
-        </div>
+        <select
+          className="form-select mb-3"
+          value={type}
+          onChange={(e) => setType(e.target.value)}
+        >
+          <option value="increase">Increase</option>
+          <option value="decrease">Decrease</option>
+        </select>
 
-        <div className="mb-3">
-          <label>Quantity</label>
-          <input
-            type="number"
-            className="form-control"
-            value={changeQty}
-            onChange={(e) => setChangeQty(e.target.value)}
-            required
-          />
-        </div>
+        <input
+          type="number"
+          className="form-control mb-3"
+          value={changeQty}
+          onChange={(e) => setChangeQty(e.target.value)}
+          required
+        />
 
-        <div className="mb-3">
-          <label>Reason</label>
-          <select
-            className="form-select"
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-          >
-            <option value="purchase">Purchase</option>
-            <option value="damage">Damage</option>
-            <option value="adjustment">Stock Adjustment</option>
-          </select>
-        </div>
+        <select
+          className="form-select mb-3"
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          required
+        >
+          <option value="">Select</option>
+          <option value="damage">Damage</option>
+          <option value="adjustment">Adjustment</option>
+        </select>
 
         <button className="btn btn-success">
           Update
