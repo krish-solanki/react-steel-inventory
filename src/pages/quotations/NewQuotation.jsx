@@ -21,7 +21,7 @@ const NewQuotation = () => {
         const res = await axios.get("http://localhost:5000/api/products");
         setProducts(res.data);
       } catch {
-        setError('Quatation Not Added')
+        setError('Quatation Not Added Try Again');
       }
     };
 
