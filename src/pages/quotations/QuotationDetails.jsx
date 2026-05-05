@@ -40,7 +40,7 @@ const QuotationDetails = () => {
           _id: "1",
           ProductId: { name: "Chair" },
           Quantity: 2,
-          UnitPrice: 2000
+          UnitPrice: 3000
         },
         {
           _id: "2",
